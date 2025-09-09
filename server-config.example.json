@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "crawl4ai-local": {
+      "transport": "stdio",
+      "command": "python",
+      "args": ["-m", "mcp.server"],
+      "env": {
+        "CRAWL4AI_ENDPOINT": "https://your-crawl4ai-server.com"
+      }
+    },
+    "crawl4ai-remote": {
+      "transport": "http",
+      "url": "https://your-mcp-server.com/mcp",
+      "bearerToken": "your_bearer_token_here"
+    }
+  }
+}

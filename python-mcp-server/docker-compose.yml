@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # MCP Universal Proxy - подключается к удаленному Crawl4AI серверу
+  mcp-proxy:
+    image: crawl4ai-mcp-local:fixed-api
+    container_name: mcp-universal-proxy
+    ports:
+      - "3000:3000"  # StreamableHTTP port
+      - "9000:9000"  # SSE port
+    environment:
+      # Удаленный Crawl4AI сервер
+      - CRAWL4AI_ENDPOINT=https://your-server.example.com
+      
+      # Server ports
+      - HTTP_PORT=3000
+      - SSE_PORT=9000
+      
+      # Authentication (если нужно)
+      # - BEARER_TOKEN=your_token_here
+      
+      # Logging
+      - LOG_LEVEL=INFO
+      - DEBUG=false
+      
+      # HTTP client settings
+      - REQUEST_TIMEOUT=60
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    # Universal server startup command
+    command: ["python", "src/server.py"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s  
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+networks:
+  mcp-network:
+    external: true
