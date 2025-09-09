@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MCP Server Configuration",
+  "description": "Schema for MCP server configuration files",
+  "type": "object",
+  "required": ["mcpServers"],
+  "properties": {
+    "mcpServers": {
+      "type": "object",
+      "minProperties": 1,
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]+$": {
+          "$ref": "#/definitions/serverConfig"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Map of server names to their configurations"
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "serverConfig": {
+      "type": "object",
+      "oneOf": [
+        {
+          "required": ["command"],
+          "not": {
+            "required": ["transport"]
+          }
+        },
+        {
+          "required": ["transport", "command"],
+          "properties": {
+            "transport": {
+              "const": "stdio"
+            }
+          }
+        },
+        {
+          "required": ["transport", "url"],
+          "properties": {
+            "transport": {
+              "enum": ["http", "sse"]
+            }
+          }
+        }
+      ],
+      "properties": {
+        "command": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Command to execute for the server"
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Command line arguments"
+        },
+        "env": {
+          "type": "object",
+          "patternProperties": {
+            "^[A-Z_][A-Z0-9_]*$": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "description": "Environment variables to set"
+        },
+        "transport": {
+          "type": "string",
+          "enum": ["stdio", "http", "sse"],
+          "description": "Transport type for connecting to the server"
+        },
+        "url": {
+          "type": "string",
+          "description": "URL for SSE or HTTP transport"
+        },
+        "bearerToken": {
+          "type": "string",
+          "description": "Bearer token for authentication"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

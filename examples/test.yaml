@@ -1,0 +1,58 @@
+name: Crawl4AI MCP Tests
+description: Test suite for all Crawl4AI tools
+
+tests:
+  - name: Test markdown extraction
+    tool: md
+    arguments:
+      url: https://example.com
+    assert:
+      - type: contains
+        value: "Example Domain"
+      - type: contains
+        value: "This domain is for use in illustrative examples"
+
+  - name: Test HTML extraction
+    tool: html
+    arguments:
+      url: https://example.com
+    assert:
+      - type: contains
+        value: "<title>Example Domain</title>"
+      - type: contains
+        value: "<h1>Example Domain</h1>"
+
+  - name: Test JavaScript execution
+    tool: execute_js
+    arguments:
+      url: https://example.com
+      script: "document.title"
+    assert:
+      - type: equals
+        value: "Example Domain"
+
+  - name: Test crawl with options
+    tool: crawl
+    arguments:
+      url: https://example.com
+      wait_for: "h1"
+      timeout: 5000
+    assert:
+      - type: contains
+        value: "Example Domain"
+
+  - name: Test screenshot capture
+    tool: screenshot
+    arguments:
+      url: https://example.com
+      full_page: false
+    assert:
+      - type: not_empty
+
+  - name: Test PDF generation
+    tool: pdf
+    arguments:
+      url: https://example.com
+      format: "A4"
+    assert:
+      - type: not_empty

@@ -1,0 +1,166 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "crawl4ai-mcp"
+version = "1.0.0"
+description = "MCP (Model Context Protocol) server for Crawl4AI - Universal web crawling and data extraction"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "stgmt", email = ""},
+]
+keywords = [
+    "mcp",
+    "model-context-protocol",
+    "crawl4ai",
+    "web-scraping",
+    "web-crawler",
+    "data-extraction",
+    "ai-tools",
+    "llm-tools",
+    "anthropic",
+    "claude",
+    "openai",
+    "chatgpt",
+    "async",
+    "python",
+    "sse",
+    "server-sent-events",
+    "stdio",
+    "http",
+    "webscraping",
+    "beautifulsoup",
+    "playwright",
+    "selenium",
+    "api",
+    "automation",
+]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "mcp>=1.0.0",
+    "crawl4ai>=0.2.0",
+    "starlette>=0.27.0",
+    "uvicorn[standard]>=0.24.0",
+    "httpx>=0.25.0",
+    "pydantic>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "typing-extensions>=4.0.0",
+    "aiofiles>=23.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
+    "mypy>=1.0.0",
+    "ruff>=0.1.0",
+    "pre-commit>=3.0.0",
+]
+
+test = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+    "httpx>=0.25.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/stgmt/crawl4ai-mcp"
+Documentation = "https://github.com/stgmt/crawl4ai-mcp#readme"
+Repository = "https://github.com/stgmt/crawl4ai-mcp"
+Issues = "https://github.com/stgmt/crawl4ai-mcp/issues"
+
+[project.scripts]
+crawl4ai-mcp = "crawl4ai_mcp.__main__:main"
+
+[tool.setuptools]
+packages = ["crawl4ai_mcp"]
+
+[tool.setuptools.package-data]
+crawl4ai_mcp = ["py.typed"]
+
+[tool.black]
+line-length = 100
+target-version = ["py39", "py310", "py311", "py312"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "C",   # flake8-comprehensions
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line too long
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+    "W191",  # indentation contains tabs
+]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_any_unimported = false
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+check_untyped_defs = true
+strict_equality = true
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q --strict-markers"
+testpaths = [
+    "tests",
+]
+pythonpath = [
+    ".",
+]
+
+[tool.coverage.run]
+source = ["crawl4ai_mcp"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]

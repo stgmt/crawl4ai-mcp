@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "crawl4ai-local": {
+      "command": "crawl4ai-mcp",
+      "args": ["--stdio"],
+      "env": {
+        "CRAWL4AI_ENDPOINT": "http://localhost:8000",
+        "LOG_LEVEL": "INFO"
+      }
+    }
+  }
+}
