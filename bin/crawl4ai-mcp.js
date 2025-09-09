@@ -6,10 +6,18 @@ const path = require('path');
 // Get command line arguments
 const args = process.argv.slice(2);
 
-// Check if Python is installed
+// Check if Python is installed and meets version requirements
 const checkPython = () => {
   return new Promise((resolve) => {
-    const pythonCommands = ['python3', 'python'];
+    // Try different Python commands in order of preference
+    const pythonCommands = [
+      'python3.13',
+      'python3.12', 
+      'python3.11',
+      'python3.10',
+      'python3',
+      'python'
+    ];
     let index = 0;
     
     const tryNext = () => {
@@ -20,11 +28,27 @@ const checkPython = () => {
       
       const cmd = pythonCommands[index++];
       const check = spawn(cmd, ['--version']);
+      let output = '';
+      
+      check.stdout.on('data', (data) => {
+        output += data.toString();
+      });
       
       check.on('error', tryNext);
       check.on('exit', (code) => {
         if (code === 0) {
-          resolve(cmd);
+          // Parse version to check if >= 3.10
+          const match = output.match(/Python (\d+)\.(\d+)/);
+          if (match) {
+            const major = parseInt(match[1]);
+            const minor = parseInt(match[2]);
+            if (major === 3 && minor >= 10) {
+              console.log(`Using ${cmd} (${output.trim()})`);
+              resolve(cmd);
+              return;
+            }
+          }
+          tryNext();
         } else {
           tryNext();
         }
@@ -40,8 +64,9 @@ const main = async () => {
   const pythonCmd = await checkPython();
   
   if (!pythonCmd) {
-    console.error('Error: Python is not installed or not in PATH');
-    console.error('Please install Python 3.9 or later from https://www.python.org/');
+    console.error('Error: Python 3.10+ is not installed or not in PATH');
+    console.error('Please install Python 3.10 or later from https://www.python.org/');
+    console.error('Or use: brew install python@3.11');
     process.exit(1);
   }
   
@@ -59,8 +84,8 @@ const main = async () => {
       console.error('crawl4ai-mcp-sse-stdio Python package is not installed.');
       console.error('Installing it now...');
       
-      // Try to install the package
-      const install = spawn(pythonCmd, ['-m', 'pip', 'install', 'crawl4ai-mcp-sse-stdio']);
+      // Try to install the package with --user flag for modern Python
+      const install = spawn(pythonCmd, ['-m', 'pip', 'install', '--user', '--break-system-packages', 'crawl4ai-mcp-sse-stdio']);
       
       install.stdout.on('data', (data) => {
         process.stdout.write(data);
