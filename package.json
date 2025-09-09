@@ -1,0 +1,65 @@
+{
+  "name": "crawl4ai-mcp-sse-stdio",
+  "version": "1.0.0",
+  "description": "MCP (Model Context Protocol) server for Crawl4AI - Universal web crawling and data extraction. Supports STDIO, SSE, and HTTP transports.",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "crawl4ai",
+    "web-scraping",
+    "web-crawler",
+    "data-extraction",
+    "ai-tools",
+    "llm-tools",
+    "anthropic",
+    "claude",
+    "openai",
+    "chatgpt",
+    "sse",
+    "server-sent-events",
+    "stdio",
+    "http",
+    "webscraping",
+    "playwright",
+    "api",
+    "automation",
+    "python"
+  ],
+  "author": "stgmt",
+  "license": "MIT",
+  "homepage": "https://github.com/stgmt/crawl4ai-mcp",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stgmt/crawl4ai-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/stgmt/crawl4ai-mcp/issues"
+  },
+  "main": "index.js",
+  "bin": {
+    "crawl4ai-mcp": "./bin/crawl4ai-mcp.js",
+    "crawl4ai-mcp-stdio": "./bin/crawl4ai-mcp-stdio.js",
+    "crawl4ai-mcp-sse": "./bin/crawl4ai-mcp-sse.js",
+    "crawl4ai-mcp-http": "./bin/crawl4ai-mcp-http.js"
+  },
+  "scripts": {
+    "postinstall": "node scripts/postinstall.js",
+    "test": "echo \"Tests are in Python package\" && exit 0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64",
+    "arm"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

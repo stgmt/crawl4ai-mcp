@@ -1,0 +1,138 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  test-python:
+    name: Test Python Package
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install pytest pytest-asyncio pytest-cov
+      
+      - name: Run tests
+        run: |
+          pytest tests/ -v --cov=crawl4ai_mcp --cov-report=xml --cov-report=term
+      
+      - name: Test CLI commands
+        run: |
+          crawl4ai-mcp --help
+          crawl4ai-mcp --version
+      
+      - name: Upload coverage
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+
+  test-npm:
+    name: Test NPM Package
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: ['18', '20', '22']
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Test NPM package locally
+        run: |
+          npm pack
+          npm install -g *.tgz
+          npx crawl4ai-mcp --help
+      
+      - name: Test bin scripts
+        run: |
+          node bin/crawl4ai-mcp.js --help
+          node bin/crawl4ai-mcp-stdio.js --help
+          node bin/crawl4ai-mcp-sse.js --help
+          node bin/crawl4ai-mcp-http.js --help
+
+  test-docker:
+    name: Test Docker Build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: crawl4ai-mcp:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Test Docker image
+        run: |
+          docker run --rm crawl4ai-mcp:test --help
+          docker run --rm crawl4ai-mcp:test --version
+
+  lint:
+    name: Lint and Format Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install lint tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install black mypy ruff
+      
+      - name: Check formatting with black
+        run: black --check crawl4ai_mcp/
+      
+      - name: Check with ruff
+        run: ruff check crawl4ai_mcp/
+      
+      - name: Type check with mypy
+        run: mypy crawl4ai_mcp/ --ignore-missing-imports

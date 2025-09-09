@@ -1,0 +1,15 @@
+LICENSE
+README.md
+pyproject.toml
+setup.py
+crawl4ai_mcp/__init__.py
+crawl4ai_mcp/__main__.py
+crawl4ai_mcp/event_store.py
+crawl4ai_mcp/server.py
+crawl4ai_mcp_sse_stdio.egg-info/PKG-INFO
+crawl4ai_mcp_sse_stdio.egg-info/SOURCES.txt
+crawl4ai_mcp_sse_stdio.egg-info/dependency_links.txt
+crawl4ai_mcp_sse_stdio.egg-info/entry_points.txt
+crawl4ai_mcp_sse_stdio.egg-info/requires.txt
+crawl4ai_mcp_sse_stdio.egg-info/top_level.txt
+tests/test_server.py

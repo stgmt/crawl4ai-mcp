@@ -3,14 +3,14 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "crawl4ai-mcp"
+name = "crawl4ai-mcp-sse-stdio"
 version = "1.0.0"
 description = "MCP (Model Context Protocol) server for Crawl4AI - Universal web crawling and data extraction"
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "MIT"}
 authors = [
-    {name = "stgmt", email = ""},
+    {name = "stgmt"},
 ]
 keywords = [
     "mcp",

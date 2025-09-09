@@ -1,0 +1,62 @@
+# Ignore everything except what we need for NPM
+mcp-server-tester/
+python-mcp-server/
+infrastructure/
+
+# Python build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Python source files (we use PyPI package)
+crawl4ai_mcp/
+tests/
+*.py
+pyproject.toml
+setup.py
+setup.cfg
+requirements*.txt
+
+# Development files
+.git/
+.github/
+.gitignore
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Docker files (optional, можно оставить)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Docs
+docs/
+examples/
+*.md
+!README.md
+
+# Other
+.DS_Store
+.env
+.pypirc
+*.log
