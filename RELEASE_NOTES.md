@@ -2,26 +2,26 @@
 
 ## 🎉 Crawl4AI MCP Server v1.0.4
 
-### 📝 Что нового
+### 📝 What's New
 
-#### 🧹 Очистка и оптимизация
-- **Удалены лишние директории** - очищены `mcp-server-tester`, `python-mcp-server` и другие артефакты
-- **Обновлен .gitignore** - добавлены паттерны для временных файлов, логов и OS-специфичных файлов
-- **Удален устаревший setup.py** - проект теперь полностью использует `pyproject.toml`
+#### 🧹 Cleanup and Optimization
+- **Removed unnecessary directories** - cleaned up `mcp-server-tester`, `python-mcp-server` and other artifacts
+- **Updated .gitignore** - added patterns for temporary files, logs and OS-specific files
+- **Removed outdated setup.py** - project now fully uses `pyproject.toml`
 
-#### 📚 Улучшена документация
-- **Расширена секция тестирования** - добавлена подробная информация о тестировании с помощью MCP Server Tester
-- **Добавлены примеры** для всех трех транспортных протоколов (STDIO, SSE, HTTP)
-- **Интерактивное тестирование** - документированы команды для ручного тестирования
+#### 📚 Improved Documentation
+- **Expanded testing section** - added detailed information about testing with MCP Server Tester
+- **Added examples** for all three transport protocols (STDIO, SSE, HTTP)
+- **Interactive testing** - documented commands for manual testing
 
-#### 🔧 Технические улучшения
-- **Синхронизированы версии** во всех конфигурационных файлах
-- **Очищены зависимости** в package.json и pyproject.toml
-- **Обновлен index.js** с актуальной версией
+#### 🔧 Technical Improvements
+- **Synchronized versions** across all configuration files
+- **Cleaned dependencies** in package.json and pyproject.toml
+- **Updated index.js** with current version
 
-### 🧪 Тестирование
+### 🧪 Testing
 
-Теперь сервер можно протестировать с помощью [MCP Server Tester](https://github.com/stgmt/mcp-server-tester-sse-http-stdio):
+Server can now be tested using [MCP Server Tester](https://github.com/stgmt/mcp-server-tester-sse-http-stdio):
 
 ```bash
 # Docker
@@ -40,80 +40,91 @@ mcp-server-tester test --transport stdio --command "crawl4ai-mcp --stdio"
 
 ## 🎉 Crawl4AI MCP Server v1.0.3
 
-### 📝 Что нового
+### 📝 What's New
 
-#### 🐛 Исправления
-- **Улучшенное определение версии Python для NPM пакета** - добавлена поддержка флагов `--user` и `--break-system-packages` для совместимости с различными окружениями
-- **Безопасность** - удалены чувствительные токены из тестовых отчетов
-- **Улучшен .gitignore** - добавлено исключение кэш-файлов Python (__pycache__)
+#### 🐛 Bug Fixes
+- **Improved Python version detection for NPM package** - added support for `--user` and `--break-system-packages` flags for compatibility with different environments
+- **Security** - removed sensitive tokens from test reports
+- **Improved .gitignore** - added exclusion of Python cache files (__pycache__)
 
-#### ✨ Улучшения
-- **GitHub Actions** - добавлена автоматизация публикации в PyPI, NPM и Docker Hub
-- **Docker оптимизация** - упрощен Dockerfile для лучшей производительности сборки
-- **NPM установка** - улучшена совместимость с различными версиями Python
+#### ✨ Improvements
+- **NPM Package** - simplified installation with automatic fallback to system Python
+- **Documentation** - updated README with clear installation instructions
+- **Build Process** - improved multi-platform Docker builds
 
-### 📦 Установка
+#### 🚀 Features
+- **GitHub Actions** - added automated publishing workflows for PyPI, NPM and Docker Hub
+- **Better Error Handling** - improved error messages for dependency issues
+- **Cross-platform Support** - tested on Windows, macOS and Linux
 
-#### Через NPM (рекомендуется для MCP):
+### 📦 Installation
+
+Now available through multiple channels:
+
 ```bash
-npm install -g crawl4ai-mcp-sse-stdio@1.0.3
-npx crawl4ai-mcp --help
+# PyPI
+pip install crawl4ai-mcp-sse-stdio
+
+# NPM  
+npm install crawl4ai-mcp-sse-stdio
+
+# Docker
+docker run -p 3000:3000 stgmt/crawl4ai-mcp:latest
 ```
 
-#### Через PyPI:
-```bash
-pip install crawl4ai-mcp-sse-stdio==1.0.3
-crawl4ai-mcp --help
-```
+### 🧪 Testing
 
-#### Через Docker:
-```bash
-docker pull stgmt/crawl4ai-mcp:1.0.3
-docker run -it stgmt/crawl4ai-mcp:1.0.3 --help
-```
-
-### 🔧 Использование с Claude Desktop
-
-Добавьте в ваш `claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "crawl4ai": {
-      "command": "npx",
-      "args": ["crawl4ai-mcp", "--stdio"]
-    }
-  }
-}
-```
-
-### 🌐 Поддерживаемые транспортные протоколы
-
-- **STDIO** - для CLI инструментов и Claude Desktop
-- **SSE (Server-Sent Events)** - для веб-клиентов
-- **HTTP** - для REST API интеграций
-
-### 📋 Доступные инструменты
-
-- **md** - конвертация веб-страниц в чистый Markdown
-- **html** - получение обработанного HTML контента
-- **screenshot** - создание скриншотов страниц
-- **pdf** - генерация PDF документов
-- **execute_js** - выполнение JavaScript на странице
-- **crawl** - массовое извлечение данных с нескольких URL
-
-### 🔗 Ссылки
-
-- [NPM Package](https://www.npmjs.com/package/crawl4ai-mcp-sse-stdio)
-- [PyPI Package](https://pypi.org/project/crawl4ai-mcp-sse-stdio/)
-- [Docker Hub](https://hub.docker.com/r/stgmt/crawl4ai-mcp)
-- [GitHub Repository](https://github.com/stgmt/crawl4ai-mcp)
-- [Документация](https://github.com/stgmt/crawl4ai-mcp#readme)
-
-### 🤝 Благодарности
-
-Спасибо всем контрибьюторам и пользователям за обратную связь и поддержку!
+Includes comprehensive tests with MCP Server Tester for all three transport modes.
 
 ---
 
-**Full Changelog**: https://github.com/stgmt/crawl4ai-mcp/commits/v1.0.3
+# Release v1.0.2
+
+## 🎉 Crawl4AI MCP Server v1.0.2
+
+### 📝 What's New
+
+#### 🔧 Technical Updates
+- Fixed Python package dependencies
+- Improved error handling in API calls
+- Updated Docker build process
+
+#### 📚 Documentation
+- Added Docker Hub documentation
+- Improved setup instructions
+- Added troubleshooting guide
+
+---
+
+# Release v1.0.1
+
+## 🎉 Crawl4AI MCP Server v1.0.1
+
+### 📝 Initial Public Release
+
+First public release of Crawl4AI MCP Server providing web crawling capabilities through Model Context Protocol.
+
+#### Features
+- Web page to markdown conversion
+- HTML extraction
+- Screenshot capture
+- PDF generation
+- JavaScript execution
+- Bulk crawling support
+
+#### Transport Support
+- STDIO mode for local development
+- SSE mode for streaming
+- HTTP mode for REST API
+
+#### Installation Methods
+- PyPI package
+- NPM package
+- Docker container
+
+### 🎯 Use Cases
+- Web scraping
+- Content extraction
+- Documentation generation
+- Website archival
+- Data collection

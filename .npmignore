@@ -44,7 +44,7 @@ requirements*.txt
 *.swo
 *~
 
-# Docker files (optional, можно оставить)
+# Docker files (optional, can be kept)
 Dockerfile
 docker-compose.yml
 .dockerignore

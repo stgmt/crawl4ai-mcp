@@ -47,9 +47,9 @@ class Crawl4aiMd(BaseHandler):
     async def run_tool(self, arguments: Dict[str, Any]) -> Sequence[TextContent]:
         """Execute markdown conversion via crawl4ai API"""
         try:
-            # API требует urls (массив), а не url
+            # API requires urls (array), not url
             request_data = {
-                "urls": [arguments["url"]],  # API ожидает массив URLs
+                "urls": [arguments["url"]],  # API expects array of URLs
                 "wait_for": "body",
                 "timeout": 30000,
                 "remove_overlay_elements": True,
@@ -57,26 +57,26 @@ class Crawl4aiMd(BaseHandler):
                 "exclude_external_links": True
             }
             
-            # Вызываем /crawl endpoint вместо /md
+            # Call /crawl endpoint instead of /md
             result = await self.call_crawl4ai_api("crawl", request_data)
             
-            # API возвращает массив результатов для каждого URL
+            # API returns array of results for each URL
             if isinstance(result, list) and len(result) > 0:
                 first_result = result[0]
                 if isinstance(first_result, dict):
-                    # Извлекаем markdown из первого результата
+                    # Extract markdown from first result
                     content = first_result.get("markdown", "")
                     if not content and "markdown_v2" in first_result:
-                        # Используем markdown_v2 если обычного markdown нет
+                        # Use markdown_v2 if regular markdown is missing
                         markdown_v2 = first_result.get("markdown_v2", {})
                         content = markdown_v2.get("raw_markdown", str(first_result))
                     elif not content:
-                        # Fallback на весь результат
+                        # Fallback to full result
                         content = str(first_result)
                 else:
                     content = str(result)
             elif isinstance(result, dict) and "markdown" in result:
-                # На случай если API вернет объект, а не массив
+                # In case API returns object instead of array
                 content = result["markdown"]
             else:
                 content = str(result)

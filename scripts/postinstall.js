@@ -44,7 +44,7 @@ const installPackage = (pythonCmd) => {
   });
   
   pipInstall.stderr.on('data', (data) => {
-    // pip часто пишет в stderr даже при успехе
+    // pip often writes to stderr even on success
     if (data.includes('WARNING') || data.includes('Requirement already satisfied')) {
       process.stdout.write(data);
     } else {

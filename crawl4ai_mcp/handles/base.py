@@ -37,18 +37,18 @@ class BaseHandler(abc.ABC):
                 if settings.BEARER_TOKEN:
                     headers["Authorization"] = f"Bearer {settings.BEARER_TOKEN}"
                 
-                # Детальное логирование запроса
+                # Detailed request logging
                 logger.info(f"Calling crawl4ai API: {url}")
                 logger.debug(f"Request headers: {headers}")
                 logger.debug(f"Request data: {data}")
                 
                 response = await client.post(url, json=data, headers=headers)
                 
-                # Логирование ответа
+                # Response logging
                 logger.info(f"Response status: {response.status_code}")
                 logger.debug(f"Response headers: {dict(response.headers)}")
                 
-                # Проверка статуса
+                # Status check
                 response.raise_for_status()
                 
                 result = response.json()

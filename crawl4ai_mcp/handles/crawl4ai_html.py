@@ -28,7 +28,7 @@ class Crawl4aiHtml(BaseHandler):
     async def run_tool(self, arguments: Dict[str, Any]) -> Sequence[TextContent]:
         """Execute HTML extraction via crawl4ai API"""
         try:
-            # API требует urls (массив), а не url
+            # API requires urls (array), not url
             request_data = {
                 "urls": [arguments["url"]],
                 "wait_for": "body",
@@ -36,10 +36,10 @@ class Crawl4aiHtml(BaseHandler):
                 "remove_overlay_elements": True
             }
             
-            # Используем /crawl endpoint
+            # Use /crawl endpoint
             result = await self.call_crawl4ai_api("crawl", request_data)
             
-            # Обрабатываем массив результатов
+            # Process results array
             if isinstance(result, list) and len(result) > 0:
                 first_result = result[0]
                 if isinstance(first_result, dict):
