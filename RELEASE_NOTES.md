@@ -1,3 +1,37 @@
+# Release v1.0.5
+
+## 🎉 Crawl4AI MCP Server v1.0.5
+
+### 📝 What's New
+
+#### 🌍 Complete Internationalization
+- **Removed all Russian text** from codebase and git history
+- **Translated all comments** to English for better international collaboration
+- **Cleaned commit history** - all commit messages now in English
+- **Improved code readability** for global developer community
+
+#### 🔧 Technical Improvements
+- Cleaned up all source files from non-ASCII characters
+- Standardized all documentation to English
+- Improved international compatibility
+
+### 📦 Installation
+
+Available through multiple channels:
+
+```bash
+# PyPI
+pip install crawl4ai-mcp-sse-stdio
+
+# NPM  
+npm install crawl4ai-mcp-sse-stdio
+
+# Docker
+docker run -p 3000:3000 stgmt/crawl4ai-mcp:latest
+```
+
+---
+
 # Release v1.0.4
 
 ## 🎉 Crawl4AI MCP Server v1.0.4
