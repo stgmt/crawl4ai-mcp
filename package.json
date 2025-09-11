@@ -1,6 +1,6 @@
 {
   "name": "crawl4ai-mcp-sse-stdio",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "MCP (Model Context Protocol) server for Crawl4AI - Universal web crawling and data extraction. Supports STDIO, SSE, and HTTP transports.",
   "keywords": [
     "mcp",
