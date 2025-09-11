@@ -1,7 +1,0 @@
-{
-  "mcpServers": {
-    "broken": {
-      "command": "node"
-    }
-  }
-  // Missing closing brace and invalid comment

@@ -54,3 +54,18 @@ htmlcov/
 # Node
 node_modules/
 npm-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Temporary files
+*.tmp
+*.bak
+*.orig
+.cache/
+
+# OS files
+Thumbs.db
+
+# Test output
+test-results/
+test-report.xml

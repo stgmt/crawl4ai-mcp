@@ -3,7 +3,7 @@
 
 module.exports = {
   name: 'crawl4ai-mcp-sse-stdio',
-  version: '1.0.0',
+  version: '1.0.4',
   description: 'MCP server for Crawl4AI - Universal web crawling and data extraction',
   
   // MCP configuration helper

@@ -450,26 +450,128 @@ pytest tests/test_server.py::test_crawl_tool
 
 ### Testing with MCP Server Tester
 
-```bash
-# Install the tester
-npm install -g mcp-server-tester
+This MCP server can be comprehensively tested using the [MCP Server Tester](https://github.com/stgmt/mcp-server-tester-sse-http-stdio) that supports all three transport protocols (STDIO, SSE, HTTP).
 
-# Test the server
-mcp-server-tester test.yaml --server-config server.json
+#### Install MCP Server Tester
+
+```bash
+# Option 1: Using Docker (recommended)
+docker run -it stgmt/mcp-server-tester test --help
+
+# Option 2: Using NPM
+npm install -g mcp-server-tester-sse-http-stdio
+mcp-server-tester test --help
+
+# Option 3: Using Python
+pip install mcp-server-tester-sse-http-stdio
+mcp-server-tester test --help
 ```
 
-Example `test.yaml`:
+#### Test Examples
+
+**Test STDIO mode:**
+
+```bash
+# Docker
+docker run -it stgmt/mcp-server-tester test \
+  --transport stdio \
+  --command "crawl4ai-mcp --stdio"
+
+# NPM/Python
+mcp-server-tester test \
+  --transport stdio \
+  --command "crawl4ai-mcp --stdio"
+```
+
+**Test HTTP mode:**
+
+```bash
+# Start the server first
+crawl4ai-mcp --http &
+
+# Run tests
+mcp-server-tester test \
+  --transport http \
+  --url http://localhost:3000
+```
+
+**Test SSE mode:**
+
+```bash
+# Start the server first
+crawl4ai-mcp --sse &
+
+# Run tests
+mcp-server-tester test \
+  --transport sse \
+  --url http://localhost:3001
+```
+
+**Test with configuration file:**
+
+Create `test-config.yaml`:
 
 ```yaml
-name: Crawl4AI Tests
+name: Crawl4AI Comprehensive Tests
+transport: stdio
+command: crawl4ai-mcp --stdio
 tests:
   - name: Test markdown extraction
     tool: md
     arguments:
       url: https://example.com
+      f: fit
     assert:
       - type: contains
         value: "Example Domain"
+  
+  - name: Test screenshot
+    tool: screenshot
+    arguments:
+      url: https://example.com
+      screenshot_wait_for: 2
+    assert:
+      - type: exists
+        path: result
+  
+  - name: Test HTML extraction
+    tool: html
+    arguments:
+      url: https://example.com
+    assert:
+      - type: contains
+        value: "<html"
+  
+  - name: Test JavaScript execution
+    tool: execute_js
+    arguments:
+      url: https://example.com
+      scripts: ["document.title"]
+    assert:
+      - type: contains
+        value: "Example"
+```
+
+Run the test:
+
+```bash
+mcp-server-tester test -f test-config.yaml
+```
+
+#### Interactive Testing
+
+The tester also provides an interactive mode for manual testing:
+
+```bash
+# Interactive STDIO mode
+mcp-server-tester interactive \
+  --transport stdio \
+  --command "crawl4ai-mcp --stdio"
+
+# Interactive HTTP mode
+mcp-server-tester interactive \
+  --transport http \
+  --url http://localhost:3000
 ```
 
 ## 📚 Examples
