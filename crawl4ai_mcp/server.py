@@ -40,7 +40,7 @@ class Crawl4AIMCPServer:
 
     def __init__(self, name: str = "crawl4ai-mcp") -> None:
         """Initialize the MCP server.
-        
+
         Args:
             name: Server name for identification
         """
@@ -49,11 +49,11 @@ class Crawl4AIMCPServer:
 
     def _setup_handlers(self) -> None:
         """Set up MCP protocol handlers."""
-        
+
         @self.server.list_tools()
         async def list_tools() -> List[Tool]:
             """List all available Crawl4AI tools.
-            
+
             Returns:
                 List of available MCP tools
             """
@@ -61,20 +61,18 @@ class Crawl4AIMCPServer:
             return ToolRegistry.get_all_tools()
 
         @self.server.call_tool()
-        async def call_tool(
-            name: str, arguments: Dict[str, Any]
-        ) -> Sequence[TextContent]:
+        async def call_tool(name: str, arguments: Dict[str, Any]) -> Sequence[TextContent]:
             """Execute a Crawl4AI tool.
-            
+
             Args:
                 name: Tool name to execute
                 arguments: Tool arguments
-                
+
             Returns:
                 Tool execution results
             """
             logger.info(f"Executing tool: {name} with args: {arguments}")
-            
+
             try:
                 tool = ToolRegistry.get_tool(name)
                 result = await tool.run_tool(arguments)
@@ -85,17 +83,12 @@ class Crawl4AIMCPServer:
                 return [TextContent(type="text", text=f"Error: {str(e)}")]
             except Exception as e:
                 logger.error(f"Error executing tool {name}: {str(e)}")
-                return [
-                    TextContent(
-                        type="text", 
-                        text=f"Error executing tool {name}: {str(e)}"
-                    )
-                ]
+                return [TextContent(type="text", text=f"Error executing tool {name}: {str(e)}")]
 
     async def run_stdio(self) -> None:
         """Run server in STDIO mode for command-line MCP clients."""
         logger.info("Starting Crawl4AI MCP server in STDIO mode")
-        
+
         async with stdio_server() as (read_stream, write_stream):
             try:
                 await self.server.run(
@@ -109,37 +102,35 @@ class Crawl4AIMCPServer:
 
     def run_sse(self, host: str = "0.0.0.0", port: Optional[int] = None) -> None:
         """Run server in SSE mode for web-based MCP clients.
-        
+
         Args:
             host: Host to bind to
             port: Port to bind to (uses settings.SSE_PORT if not provided)
         """
         port = port or settings.SSE_PORT
         logger.info(f"Starting Crawl4AI MCP server in SSE mode on {host}:{port}")
-        
+
         sse = SseServerTransport("/messages/")
 
         async def handle_sse(request: Request) -> Response:
             """Handle SSE connections."""
             logger.info("New SSE connection established")
-            async with sse.connect_sse(
-                request.scope, request.receive, request._send
-            ) as streams:
+            async with sse.connect_sse(request.scope, request.receive, request._send) as streams:
                 await self.server.run(
-                    streams[0], 
-                    streams[1], 
-                    self.server.create_initialization_options()
+                    streams[0], streams[1], self.server.create_initialization_options()
                 )
             return Response()
 
         async def health_check(request: Request) -> JSONResponse:
             """Health check endpoint."""
-            return JSONResponse({
-                "status": "healthy",
-                "mode": "SSE",
-                "port": port,
-                "endpoint": settings.CRAWL4AI_ENDPOINT,
-            })
+            return JSONResponse(
+                {
+                    "status": "healthy",
+                    "mode": "SSE",
+                    "port": port,
+                    "endpoint": settings.CRAWL4AI_ENDPOINT,
+                }
+            )
 
         starlette_app = Starlette(
             debug=settings.DEBUG,
@@ -149,27 +140,22 @@ class Crawl4AIMCPServer:
                 Mount("/messages/", app=sse.handle_post_message),
             ],
         )
-        
+
         uvicorn.run(starlette_app, host=host, port=port)
 
     def run_http(
-        self, 
-        host: str = "0.0.0.0", 
-        port: Optional[int] = None,
-        json_response: bool = False
+        self, host: str = "0.0.0.0", port: Optional[int] = None, json_response: bool = False
     ) -> None:
         """Run server in StreamableHTTP mode for web integration.
-        
+
         Args:
             host: Host to bind to
             port: Port to bind to (uses settings.HTTP_PORT if not provided)
             json_response: Whether to use JSON responses
         """
         port = port or settings.HTTP_PORT
-        logger.info(
-            f"Starting Crawl4AI MCP server in StreamableHTTP mode on {host}:{port}"
-        )
-        
+        logger.info(f"Starting Crawl4AI MCP server in StreamableHTTP mode on {host}:{port}")
+
         event_store = EventStore()
         session_manager = StreamableHTTPSessionManager(
             app=self.server,
@@ -189,12 +175,14 @@ class Crawl4AIMCPServer:
 
         async def health_check(request: Request) -> JSONResponse:
             """Health check endpoint."""
-            return JSONResponse({
-                "status": "healthy",
-                "mode": "StreamableHTTP",
-                "port": port,
-                "endpoint": settings.CRAWL4AI_ENDPOINT,
-            })
+            return JSONResponse(
+                {
+                    "status": "healthy",
+                    "mode": "StreamableHTTP",
+                    "port": port,
+                    "endpoint": settings.CRAWL4AI_ENDPOINT,
+                }
+            )
 
         starlette_app = Starlette(
             debug=settings.DEBUG,
@@ -204,22 +192,66 @@ class Crawl4AIMCPServer:
             ],
             lifespan=lifespan,
         )
-        
+
         uvicorn.run(starlette_app, host=host, port=port)
 
 
 def main() -> None:
     """Main entry point for the server."""
+    # Handle --help and --version flags first
+    if len(sys.argv) > 1:
+        arg = sys.argv[1].lower()
+
+        if arg in ["--help", "-h", "help"]:
+            print(
+                """Crawl4AI MCP Server - Universal web crawling and data extraction
+
+Usage: crawl4ai-mcp [OPTIONS]
+
+Options:
+  --stdio      Run in STDIO mode for MCP clients
+  --sse        Run in Server-Sent Events mode (default port: 3000)
+  --http       Run in HTTP mode (default port: 3001)
+  --help       Show this help message
+  --version    Show version information
+
+Environment Variables:
+  CRAWL4AI_ENDPOINT    Crawl4AI API endpoint
+  BEARER_TOKEN         Bearer token for authentication
+  SSE_PORT            Port for SSE mode (default: 3000)
+  HTTP_PORT           Port for HTTP mode (default: 3001)
+
+Examples:
+  crawl4ai-mcp --stdio              # Run for Claude Desktop
+  crawl4ai-mcp --sse                 # Run SSE server on port 3000
+  crawl4ai-mcp --http                # Run HTTP server on port 3001
+
+For more information, visit: https://github.com/stgmt/crawl4ai-mcp"""
+            )
+            sys.exit(0)
+
+        if arg in ["--version", "-v", "version"]:
+            # Get version from package metadata
+            try:
+                from importlib.metadata import version
+
+                pkg_version = version("crawl4ai-mcp-sse-stdio")
+            except:
+                pkg_version = "1.0.9"  # Fallback version
+
+            print(f"crawl4ai-mcp version {pkg_version}")
+            sys.exit(0)
+
     server = Crawl4AIMCPServer()
-    
+
     logger.info(f"🚀 Crawl4AI MCP Server starting")
     logger.info(f"📍 Endpoint: {settings.CRAWL4AI_ENDPOINT}")
     logger.info(f"🛠️ Available tools: md, html, screenshot, pdf, execute_js, crawl")
-    
+
     # Parse command line arguments
     if len(sys.argv) > 1:
         mode = sys.argv[1].lower()
-        
+
         if mode == "--stdio":
             logger.info("Running in STDIO mode")
             asyncio.run(server.run_stdio())
@@ -231,7 +263,9 @@ def main() -> None:
             server.run_http()
         else:
             logger.error(f"Unknown mode: {mode}")
-            print(f"Usage: {sys.argv[0]} [--stdio|--sse|--http]")
+            print(f"ERROR: Unknown mode: {mode}")
+            print(f"Usage: {sys.argv[0]} [--stdio|--sse|--http|--help|--version]")
+            print(f"Run '{sys.argv[0]} --help' for more information.")
             sys.exit(1)
     else:
         # Default to HTTP mode

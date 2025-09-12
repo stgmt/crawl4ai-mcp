@@ -61,6 +61,22 @@ const checkPython = () => {
 
 // Main function
 const main = async () => {
+  // Check for --help or --version early
+  if (args.length > 0 && (args[0] === '--help' || args[0] === '-h' || args[0] === 'help' || args[0] === '--version' || args[0] === '-v' || args[0] === 'version')) {
+    // Just pass through to Python directly for help/version
+    const pythonCmd = await checkPython();
+    
+    if (!pythonCmd) {
+      console.error('Error: Python 3.10+ is not installed or not in PATH');
+      console.error('Please install Python 3.10 or later from https://www.python.org/');
+      console.error('Or use: brew install python@3.11');
+      process.exit(1);
+    }
+    
+    runServer(pythonCmd, args);
+    return;
+  }
+  
   const pythonCmd = await checkPython();
   
   if (!pythonCmd) {
@@ -70,8 +86,17 @@ const main = async () => {
     process.exit(1);
   }
   
-  // Check if the Python package is installed
-  const checkPackage = spawn(pythonCmd, ['-m', 'crawl4ai_mcp', '--help']);
+  // Check if the Python package is installed (using --version instead of --help)
+  const checkPackage = spawn(pythonCmd, ['-m', 'crawl4ai_mcp', '--version']);
+  let checkOutput = '';
+  
+  checkPackage.stdout.on('data', (data) => {
+    checkOutput += data.toString();
+  });
+  
+  checkPackage.stderr.on('data', (data) => {
+    checkOutput += data.toString();
+  });
   
   checkPackage.on('error', (error) => {
     console.error('Error checking crawl4ai-mcp-sse-stdio installation:', error.message);
@@ -80,7 +105,10 @@ const main = async () => {
   });
   
   checkPackage.on('exit', (code) => {
-    if (code !== 0) {
+    // If --version returns 0, package is installed
+    if (code === 0 && checkOutput.includes('version')) {
+      runServer(pythonCmd, args);
+    } else {
       console.error('crawl4ai-mcp-sse-stdio Python package is not installed.');
       console.error('Installing it now...');
       
@@ -104,8 +132,6 @@ const main = async () => {
           process.exit(1);
         }
       });
-    } else {
-      runServer(pythonCmd, args);
     }
   });
 };
