@@ -9,9 +9,7 @@ __version__ = "1.0.0"
 __author__ = "stgmt"
 __license__ = "MIT"
 
-from typing import List
-
-__all__: List[str] = [
+__all__: list[str] = [
     "__version__",
     "__author__",
     "__license__",
