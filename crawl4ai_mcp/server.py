@@ -11,7 +11,7 @@ import contextlib
 import logging
 import sys
 from collections.abc import AsyncIterator, Sequence
-from typing import Any, Optional
+from typing import Any
 
 import uvicorn
 from mcp.server.lowlevel import Server
@@ -102,7 +102,7 @@ class Crawl4AIMCPServer:
                 logger.error(f"STDIO server error: {str(e)}")
                 raise
 
-    def run_sse(self, host: str = "0.0.0.0", port: Optional[int] = None) -> None:
+    def run_sse(self, host: str = "0.0.0.0", port: int | None = None) -> None:
         """Run server in SSE mode for web-based MCP clients.
 
         Args:
@@ -146,7 +146,7 @@ class Crawl4AIMCPServer:
         uvicorn.run(starlette_app, host=host, port=port)
 
     def run_http(
-        self, host: str = "0.0.0.0", port: Optional[int] = None, json_response: bool = False
+        self, host: str = "0.0.0.0", port: int | None = None, json_response: bool = False
     ) -> None:
         """Run server in StreamableHTTP mode for web integration.
 

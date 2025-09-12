@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.9', '3.10', '3.11', '3.12']
+        python-version: ['3.10', '3.11', '3.12']
     
     steps:
       - name: Checkout code
@@ -75,7 +75,7 @@ jobs:
       - name: Test NPM package locally
         run: |
           npm pack
-          npm install -g *.tgz
+          npm install -g crawl4ai-mcp-sse-stdio-*.tgz
           npx crawl4ai-mcp --help
       
       - name: Test bin scripts

@@ -7,7 +7,8 @@ from __future__ import annotations
 
 import logging
 import uuid
-from typing import Any, Callable, Optional
+from collections.abc import Callable
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +54,7 @@ class CorrectEventStore:
 
     async def replay_events_after(
         self, last_event_id: str, send_callback: Callable[[dict[str, Any]], Any]
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         Replay events after a specific event ID.
 
@@ -90,7 +91,7 @@ class CorrectEventStore:
         logger.warning(f"Event {last_event_id} not found in any stream")
         return None
 
-    async def get_events(self, stream_id: Optional[str] = None) -> list[tuple[str, dict]]:
+    async def get_events(self, stream_id: str | None = None) -> list[tuple[str, dict]]:
         """
         Get all events for a stream (or all streams if stream_id is None).
 
@@ -131,7 +132,7 @@ class SimpleEventStore:
 
     async def replay_events_after(
         self, last_event_id: str, send_callback: Callable[[dict[str, Any]], Any]
-    ) -> Optional[str]:
+    ) -> str | None:
         """No events to replay in simple mode."""
         return None
 

@@ -1,5 +1,4 @@
 import os
-from typing import Optional
 
 from dotenv import load_dotenv
 
@@ -19,7 +18,7 @@ class Settings:
     SSE_PORT: int = int(os.getenv("SSE_PORT", "9001"))
 
     # Authentication
-    BEARER_TOKEN: Optional[str] = os.getenv("BEARER_TOKEN")
+    BEARER_TOKEN: str | None = os.getenv("BEARER_TOKEN")
 
     # Logging
     LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
