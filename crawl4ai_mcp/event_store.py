@@ -135,3 +135,7 @@ class SimpleEventStore:
     ) -> Optional[str]:
         """No events to replay in simple mode."""
         return None
+
+
+# Default export - use CorrectEventStore as the default EventStore
+EventStore = CorrectEventStore
