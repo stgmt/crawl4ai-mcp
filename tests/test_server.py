@@ -29,17 +29,17 @@ async def test_server_initialization(server):
 async def test_list_tools(server):
     """Test listing available tools through the server interface."""
     # Mock the tools that should be registered
-    with patch.object(server.server, 'list_tools') as mock_list:
-        mock_list.return_value = [
-            Mock(name="md", description="Convert to markdown"),
-            Mock(name="html", description="Get HTML content"),
-            Mock(name="screenshot", description="Take screenshot"),
-            Mock(name="pdf", description="Generate PDF"),
-            Mock(name="execute_js", description="Execute JavaScript"),
-            Mock(name="crawl", description="Crawl multiple URLs"),
-        ]
-        
-        tools = await server.server.list_tools()
+    mock_tools = [
+        Mock(name="md", description="Convert to markdown"),
+        Mock(name="html", description="Get HTML content"),
+        Mock(name="screenshot", description="Take screenshot"),
+        Mock(name="pdf", description="Generate PDF"),
+        Mock(name="execute_js", description="Execute JavaScript"),
+        Mock(name="crawl", description="Crawl multiple URLs"),
+    ]
+    
+    with patch.object(server.server, 'list_tools', return_value=mock_tools):
+        tools = server.server.list_tools()
         
         # Check that we have tools registered
         assert len(tools) > 0
