@@ -4,6 +4,8 @@ Crawl4AI MCP Server - Main server implementation.
 Supports STDIO, SSE, and StreamableHTTP transports for MCP protocol.
 """
 
+from __future__ import annotations
+
 import asyncio
 import contextlib
 import logging

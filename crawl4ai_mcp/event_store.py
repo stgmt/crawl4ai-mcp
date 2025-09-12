@@ -3,6 +3,8 @@ EventStore implementation for StreamableHTTP with correct signature.
 Fixes the store_event() TypeError by matching the MCP SDK interface.
 """
 
+from __future__ import annotations
+
 import logging
 import uuid
 from typing import Any, Callable, Optional
