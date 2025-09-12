@@ -210,6 +210,32 @@ class Crawl4AIMCPServer:
 
 def main() -> None:
     """Main entry point for the server."""
+    # Handle special arguments
+    if len(sys.argv) > 1:
+        arg = sys.argv[1].lower()
+        
+        if arg in ["--help", "-h"]:
+            print("Crawl4AI MCP Server - Universal web crawling and data extraction")
+            print("\nUsage: crawl4ai-mcp [OPTIONS]")
+            print("\nOptions:")
+            print("  --stdio    Run in STDIO mode (for CLI MCP clients)")
+            print("  --sse      Run in SSE mode (for web-based MCP clients)")
+            print("  --http     Run in HTTP mode (default, for web integration)")
+            print("  --help     Show this help message")
+            print("  --version  Show version information")
+            print("\nAvailable tools:")
+            print("  - md: Convert webpage to markdown")
+            print("  - html: Extract HTML content")
+            print("  - screenshot: Capture webpage screenshot")
+            print("  - pdf: Generate PDF from webpage")
+            print("  - execute_js: Execute JavaScript on webpage")
+            print("  - crawl: Crawl multiple URLs")
+            sys.exit(0)
+        
+        elif arg in ["--version", "-v"]:
+            print("crawl4ai-mcp version 1.0.9")
+            sys.exit(0)
+    
     server = Crawl4AIMCPServer()
     
     logger.info(f"🚀 Crawl4AI MCP Server starting")
@@ -231,7 +257,7 @@ def main() -> None:
             server.run_http()
         else:
             logger.error(f"Unknown mode: {mode}")
-            print(f"Usage: {sys.argv[0]} [--stdio|--sse|--http]")
+            print(f"Usage: {sys.argv[0]} [--stdio|--sse|--http|--help|--version]")
             sys.exit(1)
     else:
         # Default to HTTP mode
