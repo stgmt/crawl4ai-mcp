@@ -1,2 +1,2 @@
 # Configuration module
-from .settings import *
+from .settings import *  # noqa: F403
