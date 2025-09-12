@@ -1,6 +1,6 @@
 """Tests for Crawl4AI MCP server."""
 
-from unittest.mock import AsyncMock, Mock, patch
+from unittest.mock import AsyncMock, Mock, patch, MagicMock
 
 import pytest
 from mcp.server.lowlevel import Server
@@ -28,21 +28,20 @@ async def test_server_initialization(server):
 @pytest.mark.asyncio
 async def test_list_tools(server):
     """Test listing available tools through the server interface."""
-    # Mock the tools that should be registered
-    mock_tools = [
-        Mock(name="md", description="Convert to markdown"),
-        Mock(name="html", description="Get HTML content"),
-        Mock(name="screenshot", description="Take screenshot"),
-        Mock(name="pdf", description="Generate PDF"),
-        Mock(name="execute_js", description="Execute JavaScript"),
-        Mock(name="crawl", description="Crawl multiple URLs"),
-    ]
+    # Create proper mock tool objects with name attributes
+    mock_tools = []
+    for tool_name in ["md", "html", "screenshot", "pdf", "execute_js", "crawl"]:
+        mock_tool = MagicMock()
+        mock_tool.name = tool_name
+        mock_tool.description = f"Description for {tool_name}"
+        mock_tools.append(mock_tool)
     
     with patch.object(server.server, 'list_tools', return_value=mock_tools):
         tools = server.server.list_tools()
         
         # Check that we have tools registered
         assert len(tools) > 0
+        assert len(tools) == 6
         
         # Check for expected tools
         tool_names = [tool.name for tool in tools]
