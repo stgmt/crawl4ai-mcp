@@ -3,9 +3,9 @@ EventStore implementation for StreamableHTTP with correct signature.
 Fixes the store_event() TypeError by matching the MCP SDK interface.
 """
 
-from typing import Optional, Dict, List, Tuple, Callable, Any
-import uuid
 import logging
+import uuid
+from typing import Any, Callable
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ class CorrectEventStore:
 
     def __init__(self):
         # Store events as: {stream_id: [(event_id, message), ...]}
-        self.events: Dict[str, List[Tuple[str, dict]]] = {}
+        self.events: dict[str, list[tuple[str, dict]]] = {}
         self.event_counter = 0
         logger.info("Initialized CorrectEventStore with proper signature")
 
@@ -50,8 +50,8 @@ class CorrectEventStore:
         return event_id
 
     async def replay_events_after(
-        self, last_event_id: str, send_callback: Callable[[Dict[str, Any]], Any]
-    ) -> Optional[str]:
+        self, last_event_id: str, send_callback: Callable[[dict[str, Any]], Any]
+    ) -> str | None:
         """
         Replay events after a specific event ID.
 
@@ -69,7 +69,7 @@ class CorrectEventStore:
 
         # Find the stream and position of the last event
         for stream_id, events in self.events.items():
-            for i, (event_id, message) in enumerate(events):
+            for i, (event_id, _message) in enumerate(events):
                 if event_id == last_event_id:
                     # Found it! Replay all subsequent events
                     logger.info(
@@ -88,7 +88,7 @@ class CorrectEventStore:
         logger.warning(f"Event {last_event_id} not found in any stream")
         return None
 
-    async def get_events(self, stream_id: Optional[str] = None) -> List[Tuple[str, dict]]:
+    async def get_events(self, stream_id: str | None = None) -> list[tuple[str, dict]]:
         """
         Get all events for a stream (or all streams if stream_id is None).
 
@@ -128,8 +128,8 @@ class SimpleEventStore:
         return f"evt_{uuid.uuid4().hex[:8]}"
 
     async def replay_events_after(
-        self, last_event_id: str, send_callback: Callable[[Dict[str, Any]], Any]
-    ) -> Optional[str]:
+        self, last_event_id: str, send_callback: Callable[[dict[str, Any]], Any]
+    ) -> str | None:
         """No events to replay in simple mode."""
         return None
 

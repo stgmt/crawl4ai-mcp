@@ -1,6 +1,9 @@
-from typing import Dict, Any, Sequence
+from collections.abc import Sequence
+from typing import Any
+
 from mcp import Tool
 from mcp.types import TextContent
+
 from .base import BaseHandler, ToolRegistry
 
 
@@ -40,7 +43,7 @@ class Crawl4aiAsk(BaseHandler):
             },
         )
 
-    async def run_tool(self, arguments: Dict[str, Any]) -> Sequence[TextContent]:
+    async def run_tool(self, arguments: dict[str, Any]) -> Sequence[TextContent]:
         """Query Crawl4ai documentation via API"""
         try:
             # Prepare request data - use GET parameters for ask endpoint
@@ -70,7 +73,7 @@ class Crawl4aiAsk(BaseHandler):
                 try:
                     response = await client.get(url, params=params, headers=headers)
                     response.raise_for_status()
-                except:
+                except Exception:
                     # Fallback to POST if GET doesn't work
                     response = await client.post(url, json=arguments, headers=headers)
                     response.raise_for_status()

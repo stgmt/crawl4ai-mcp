@@ -1,8 +1,11 @@
-from typing import Dict, Any, Sequence, List
+import json
+from collections.abc import Sequence
+from typing import Any
+
 from mcp import Tool
 from mcp.types import TextContent
+
 from .base import BaseHandler, ToolRegistry
-import json
 
 
 class Crawl4aiExecuteJs(BaseHandler):
@@ -29,7 +32,7 @@ class Crawl4aiExecuteJs(BaseHandler):
             },
         )
 
-    async def run_tool(self, arguments: Dict[str, Any]) -> Sequence[TextContent]:
+    async def run_tool(self, arguments: dict[str, Any]) -> Sequence[TextContent]:
         """Execute JavaScript via crawl4ai API"""
         try:
             request_data = {"url": arguments["url"], "scripts": arguments["scripts"]}

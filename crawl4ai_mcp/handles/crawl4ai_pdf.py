@@ -1,6 +1,9 @@
-from typing import Dict, Any, Sequence
+from collections.abc import Sequence
+from typing import Any
+
 from mcp import Tool
 from mcp.types import TextContent
+
 from .base import BaseHandler, ToolRegistry
 
 
@@ -30,7 +33,7 @@ class Crawl4aiPdf(BaseHandler):
             },
         )
 
-    async def run_tool(self, arguments: Dict[str, Any]) -> Sequence[TextContent]:
+    async def run_tool(self, arguments: dict[str, Any]) -> Sequence[TextContent]:
         """Execute PDF generation via crawl4ai API"""
         try:
             request_data = {"url": arguments["url"]}
