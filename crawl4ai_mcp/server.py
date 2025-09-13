@@ -26,7 +26,6 @@ from starlette.routing import Mount, Route
 from starlette.types import Receive, Scope, Send
 
 from crawl4ai_mcp.config.settings import settings
-from crawl4ai_mcp.event_store import EventStore
 from crawl4ai_mcp.handles import ToolRegistry
 
 # Configure logging
@@ -158,10 +157,11 @@ class Crawl4AIMCPServer:
         port = port or settings.HTTP_PORT
         logger.info(f"Starting Crawl4AI MCP server in StreamableHTTP mode on {host}:{port}")
 
-        event_store = EventStore()
+        from crawl4ai_mcp.event_store import EventStore as CorrectEventStore
+        event_store = CorrectEventStore()
         session_manager = StreamableHTTPSessionManager(
             app=self.server,
-            event_store=event_store,
+            event_store=event_store,  # type: ignore[arg-type]
             json_response=json_response,
         )
 

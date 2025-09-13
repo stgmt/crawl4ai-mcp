@@ -52,7 +52,7 @@ class BaseHandler(abc.ABC):
                 # Status check
                 response.raise_for_status()
 
-                result = response.json()
+                result: dict[str, Any] = response.json()
                 logger.info(f"Crawl4ai API response received: {len(str(result))} chars")
                 logger.debug(f"Response data (first 500 chars): {str(result)[:500]}")
                 return result

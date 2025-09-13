@@ -27,11 +27,15 @@ async def test_server_initialization(server):
 async def test_list_tools(server):
     """Test listing available tools."""
     with patch("crawl4ai_mcp.handles.ToolRegistry.get_all_tools") as mock_tools:
-        mock_tools.return_value = [
-            Mock(name="md"),
-            Mock(name="html"),
-            Mock(name="crawl"),
-        ]
+        # Create proper mock objects with name attributes
+        mock_md = Mock()
+        mock_md.name = "md"
+        mock_html = Mock()
+        mock_html.name = "html"
+        mock_crawl = Mock()
+        mock_crawl.name = "crawl"
+
+        mock_tools.return_value = [mock_md, mock_html, mock_crawl]
 
         # The list_tools handler is registered via decorator in _setup_handlers
         # We need to test the ToolRegistry directly since the handlers are internal
@@ -48,7 +52,11 @@ async def test_tool_registry():
     # Mock a tool
     mock_tool = Mock()
     mock_tool.name = "test_tool"
-    mock_tool.get_tool_description = Mock(return_value=Mock(name="test_tool"))
+
+    # Create mock tool description with name attribute
+    mock_description = Mock()
+    mock_description.name = "test_tool"
+    mock_tool.get_tool_description = Mock(return_value=mock_description)
 
     # Clear registry first
     ToolRegistry._tools.clear()
@@ -60,7 +68,7 @@ async def test_tool_registry():
     retrieved = ToolRegistry.get_tool("test_tool")
     assert retrieved == mock_tool
 
-    # Get all tools
+    # Get all tools (returns tool descriptions, not tools themselves)
     all_tools = ToolRegistry.get_all_tools()
     assert len(all_tools) == 1
     assert all_tools[0].name == "test_tool"

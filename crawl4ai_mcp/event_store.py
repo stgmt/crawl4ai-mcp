@@ -18,7 +18,7 @@ class CorrectEventStore:
     by implementing the correct method signature.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Store events as: {stream_id: [(event_id, message), ...]}
         self.events: dict[str, list[tuple[str, dict]]] = {}
         self.event_counter = 0
@@ -109,7 +109,7 @@ class CorrectEventStore:
             all_events.extend(stream_events)
         return all_events
 
-    def clear(self):
+    def clear(self) -> None:
         """Clear all stored events (useful for testing)."""
         self.events.clear()
         self.event_counter = 0
