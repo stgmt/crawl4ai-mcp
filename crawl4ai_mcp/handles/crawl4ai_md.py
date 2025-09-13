@@ -1,6 +1,9 @@
-from typing import Dict, Any, Sequence
+from collections.abc import Sequence
+from typing import Any
+
 from mcp import Tool
 from mcp.types import TextContent
+
 from .base import BaseHandler, ToolRegistry
 
 
@@ -45,7 +48,7 @@ class Crawl4aiMd(BaseHandler):
             },
         )
 
-    async def run_tool(self, arguments: Dict[str, Any]) -> Sequence[TextContent]:
+    async def run_tool(self, arguments: dict[str, Any]) -> Sequence[TextContent]:
         """Execute markdown conversion via crawl4ai API"""
         try:
             # API requires urls (array), not url
