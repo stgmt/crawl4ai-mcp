@@ -1,10 +1,12 @@
 import abc
-import abc
-import httpx
 import logging
-from typing import Dict, Any, Sequence, List
+from collections.abc import Sequence
+from typing import Any
+
+import httpx
 from mcp import Tool
 from mcp.types import TextContent
+
 from crawl4ai_mcp.config.settings import settings
 
 logger = logging.getLogger(__name__)
@@ -22,11 +24,11 @@ class BaseHandler(abc.ABC):
         pass
 
     @abc.abstractmethod
-    async def run_tool(self, arguments: Dict[str, Any]) -> Sequence[TextContent]:
+    async def run_tool(self, arguments: dict[str, Any]) -> Sequence[TextContent]:
         """Execute the tool with given arguments"""
         pass
 
-    async def call_crawl4ai_api(self, endpoint: str, data: Dict[str, Any]) -> Dict[str, Any]:
+    async def call_crawl4ai_api(self, endpoint: str, data: dict[str, Any]) -> dict[str, Any]:
         """Make HTTP call to crawl4ai API"""
         url = settings.get_crawl4ai_url(endpoint)
 
@@ -50,7 +52,7 @@ class BaseHandler(abc.ABC):
                 # Status check
                 response.raise_for_status()
 
-                result: Dict[str, Any] = response.json()
+                result: dict[str, Any] = response.json()
                 logger.info(f"Crawl4ai API response received: {len(str(result))} chars")
                 logger.debug(f"Response data (first 500 chars): {str(result)[:500]}")
                 return result
@@ -58,21 +60,21 @@ class BaseHandler(abc.ABC):
         except httpx.HTTPStatusError as e:
             error_msg = f"HTTP {e.response.status_code}: {e.response.text}"
             logger.error(f"Crawl4ai API error: {error_msg}")
-            raise Exception(error_msg)
-        except httpx.TimeoutException:
+            raise Exception(error_msg) from e
+        except httpx.TimeoutException as e:
             error_msg = f"Timeout calling crawl4ai API: {url}"
             logger.error(error_msg)
-            raise Exception(error_msg)
+            raise Exception(error_msg) from e
         except Exception as e:
             error_msg = f"Error calling crawl4ai API: {str(e)}"
             logger.error(error_msg)
-            raise Exception(error_msg)
+            raise Exception(error_msg) from e
 
 
 class ToolRegistry:
     """Registry for all available MCP tools"""
 
-    _tools: Dict[str, BaseHandler] = {}
+    _tools: dict[str, BaseHandler] = {}
 
     @classmethod
     def register_tool(cls, tool: BaseHandler) -> None:
@@ -88,6 +90,6 @@ class ToolRegistry:
         return cls._tools[name]
 
     @classmethod
-    def get_all_tools(cls) -> List[Tool]:
+    def get_all_tools(cls) -> list[Tool]:
         """Get all tool descriptions"""
         return [tool.get_tool_description() for tool in cls._tools.values()]

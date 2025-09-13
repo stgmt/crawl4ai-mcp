@@ -8,8 +8,8 @@ import asyncio
 import contextlib
 import logging
 import sys
-from collections.abc import AsyncIterator
-from typing import Any, Dict, List, Optional, Sequence
+from collections.abc import AsyncIterator, Sequence
+from typing import Any, Optional
 
 import uvicorn
 from mcp.server.lowlevel import Server
@@ -51,7 +51,7 @@ class Crawl4AIMCPServer:
         """Set up MCP protocol handlers."""
 
         @self.server.list_tools()
-        async def list_tools() -> List[Tool]:
+        async def list_tools() -> list[Tool]:
             """List all available Crawl4AI tools.
 
             Returns:
@@ -61,7 +61,7 @@ class Crawl4AIMCPServer:
             return ToolRegistry.get_all_tools()
 
         @self.server.call_tool()
-        async def call_tool(name: str, arguments: Dict[str, Any]) -> Sequence[TextContent]:
+        async def call_tool(name: str, arguments: dict[str, Any]) -> Sequence[TextContent]:
             """Execute a Crawl4AI tool.
 
             Args:
@@ -226,9 +226,9 @@ def main() -> None:
 
     server = Crawl4AIMCPServer()
 
-    logger.info(f"🚀 Crawl4AI MCP Server starting")
+    logger.info("🚀 Crawl4AI MCP Server starting")
     logger.info(f"📍 Endpoint: {settings.CRAWL4AI_ENDPOINT}")
-    logger.info(f"🛠️ Available tools: md, html, screenshot, pdf, execute_js, crawl")
+    logger.info("🛠️ Available tools: md, html, screenshot, pdf, execute_js, crawl")
 
     # Parse command line arguments
     if len(sys.argv) > 1:
