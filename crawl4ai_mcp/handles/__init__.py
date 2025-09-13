@@ -1,5 +1,6 @@
 # MCP Tools handlers
-from .base import BaseHandler as BaseHandler, ToolRegistry
+from .base import BaseHandler as BaseHandler
+from .base import ToolRegistry
 from .crawl4ai_crawl import Crawl4aiCrawl
 from .crawl4ai_execute_js import Crawl4aiExecuteJs
 from .crawl4ai_html import Crawl4aiHtml
