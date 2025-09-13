@@ -198,13 +198,43 @@ class Crawl4AIMCPServer:
 
 def main() -> None:
     """Main entry point for the server."""
+    # Parse command line arguments first (before logging)
+    if len(sys.argv) > 1:
+        mode = sys.argv[1].lower()
+
+        if mode in ["--help", "-h"]:
+            print("Crawl4AI MCP Server")
+            print()
+            print("Universal web crawling and data extraction through MCP")
+            print("(Model Context Protocol)")
+            print()
+            print("Usage: crawl4ai-mcp [OPTIONS]")
+            print()
+            print("Options:")
+            print("  --stdio       Run in STDIO mode for MCP clients")
+            print("  --sse         Run in SSE mode for web interfaces")
+            print("  --http        Run in HTTP mode (default)")
+            print("  --help, -h    Show this help message")
+            print("  --version, -v Show version information")
+            print()
+            print("Environment variables:")
+            print("  CRAWL4AI_ENDPOINT  Crawl4AI service endpoint URL")
+            print("  BEARER_TOKEN       Authentication token for API access")
+            sys.exit(0)
+
+        elif mode in ["--version", "-v"]:
+            from crawl4ai_mcp import __version__
+            print(f"crawl4ai-mcp {__version__}")
+            sys.exit(0)
+
+    # Initialize server and start logging
     server = Crawl4AIMCPServer()
 
     logger.info("🚀 Crawl4AI MCP Server starting")
     logger.info(f"📍 Endpoint: {settings.CRAWL4AI_ENDPOINT}")
     logger.info("🛠️ Available tools: md, html, screenshot, pdf, execute_js, crawl")
 
-    # Parse command line arguments
+    # Continue with mode parsing
     if len(sys.argv) > 1:
         mode = sys.argv[1].lower()
 
@@ -219,7 +249,7 @@ def main() -> None:
             server.run_http()
         else:
             logger.error(f"Unknown mode: {mode}")
-            print(f"Usage: {sys.argv[0]} [--stdio|--sse|--http]")
+            print("Use --help for usage information")
             sys.exit(1)
     else:
         # Default to HTTP mode
