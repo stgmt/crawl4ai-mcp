@@ -7,7 +7,7 @@ name = "crawl4ai-mcp-sse-stdio"
 version = "1.0.9"
 description = "MCP (Model Context Protocol) server for Crawl4AI - Universal web crawling and data extraction"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [
     {name = "stgmt"},
