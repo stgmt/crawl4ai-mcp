@@ -1,202 +1,318 @@
 # Crawl4AI MCP Server
 
-Model Context Protocol (MCP) server for Crawl4AI with HTTP transport, Bearer token authentication, and comprehensive testing framework.
+Мощный Model Context Protocol (MCP) сервер для веб-скрапинга и анализа контента с поддержкой JavaScript, снимков экрана и экспорта в PDF.
 
-## 📦 Installation
+[![CI Status](https://github.com/stgmt/crawl4ai-mcp/workflows/Basic%20Tests/badge.svg)](https://github.com/stgmt/crawl4ai-mcp/actions)
+[![Code Quality](https://github.com/stgmt/crawl4ai-mcp/workflows/Code%20Quality/badge.svg)](https://github.com/stgmt/crawl4ai-mcp/actions)
+[![Docker](https://github.com/stgmt/crawl4ai-mcp/workflows/Docker%20Build%20and%20Push/badge.svg)](https://github.com/stgmt/crawl4ai-mcp/actions)
+
+## 🚀 Особенности
+
+- **MCP совместимость**: Поддержка stdio, HTTP и SSE транспортов
+- **Универсальные форматы**: HTML, Markdown, PDF, скриншоты
+- **JavaScript выполнение**: Полная поддержка современных веб-приложений
+- **Bearer токен аутентификация**: Безопасный доступ к API
+- **Docker готов**: Multi-stage сборка с оптимизацией размера
+- **TypeScript тестирование**: Комплексная система тестирования
+- **Production ready**: Готов к промышленному использованию
+
+## 🛠️ Доступные MCP инструменты
+
+| Инструмент | Описание | Параметры |
+|------------|----------|-----------|
+| `md` | Конвертация веб-страниц в Markdown | `url` |
+| `html` | Извлечение HTML контента | `url` |
+| `screenshot` | Снимки веб-страниц | `url`, `options` |
+| `pdf` | Конвертация страниц в PDF | `url`, `options` |
+| `execute_js` | Выполнение JavaScript на странице | `url`, `js_code` |
+| `crawl` | Расширенное сканирование с опциями | `urls[]`, `options` |
+
+## 📦 Быстрый старт
+
+### Option 1: Docker (Рекомендуется)
 
 ```bash
-# Clone repository
+# Клонирование и сборка
 git clone https://github.com/stgmt/crawl4ai-mcp.git
 cd crawl4ai-mcp
 
+# Сборка и запуск с Docker Compose
+docker-compose up --build
+
+# Или сборка отдельного контейнера
+cd python-mcp-server
+docker build -t crawl4ai-mcp .
+
+# Запуск контейнера
+docker run -p 3000:3000 \
+  -e CRAWL4AI_ENDPOINT="https://your-crawl4ai-server.com" \
+  -e CRAWL4AI_BEARER_TOKEN="your-token" \
+  crawl4ai-mcp
+```
+
+### Option 2: Локальная установка
+
+```bash
 # Python MCP Server
 cd python-mcp-server
 pip install -r requirements.txt
 
-# Node.js MCP Tester
-cd ../mcp-server-tester
-npm install
-```
-
-## ⚙️ Configuration
-
-Set environment variables:
-```bash
-export CRAWL4AI_ENDPOINT="https://your-crawl4ai-server.com"
-export BEARER_TOKEN="your_bearer_token_here"
-```
-
-## 📖 Usage
-
-### Python MCP Server
-```bash
-python -m src.server
-```
-
-### Node.js Testing
-```bash
-npm test
-```
-
-## 🚀 Quick Start
-
-### Using the MCP Server
-
-Add to your `.mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "crawl4ai-local": {
-      "transport": "stdio",
-      "command": "python",
-      "args": ["-m", "python-mcp-server.src.server"],
-      "env": {
-        "CRAWL4AI_ENDPOINT": "https://your-crawl4ai-server.com"
-      }
-    },
-    "crawl4ai-remote": {
-      "transport": "http",
-      "url": "https://your-mcp-server.com/mcp",
-      "bearerToken": "your_bearer_token_here"
-    }
-  }
-}
-```
-
-## 📁 Project Structure
-
-```
-crawl4ai-mcp/
-├── python-mcp-server/     # Python MCP server implementation
-│   ├── src/               # MCP server source code
-│   ├── Dockerfile         # Docker configuration
-│   ├── docker-compose.yml # Docker Compose setup
-│   ├── requirements.txt   # Python dependencies
-│   └── .env.example       # Environment variables example
-├── mcp-server-tester/     # TypeScript MCP testing framework
-│   ├── src/               # TypeScript source code
-│   ├── test/              # Test suites
-│   ├── examples/          # Usage examples
-│   ├── package.json       # Node.js dependencies
-│   └── test-all-tools.yaml # Test configuration
-├── server-config.example.json # MCP configuration examples
-├── BEARER_AUTH.md         # Authentication guide
-└── README.md              # This file
-```
-
-## 🛠️ Available MCP Tools
-
-| Tool | Description | Input Parameters |
-|------|-------------|------------------|
-| **`md`** | Convert URLs to Markdown | `url` (string) |
-| **`html`** | Extract HTML content | `url` (string) |
-| **`execute_js`** | Execute JavaScript on pages | `url` (string), `js_code` (string) |
-| **`crawl`** | Advanced crawling with options | `urls` (array), `options` (object) |
-| **`screenshot`** | Web page screenshots | `url` (string), `options` (object) |
-| **`pdf`** | Convert pages to PDF | `url` (string), `options` (object) |
-
-## 🔧 Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `CRAWL4AI_ENDPOINT` | `https://your-server.example.com` | Crawl4AI API server URL |
-| `HTTP_PORT` | `3000` | HTTP transport port |
-| `SSE_PORT` | `9001` | SSE transport port |
-| `BEARER_TOKEN` | `None` | Bearer token for authentication |
-| `LOG_LEVEL` | `INFO` | Logging level |
-| `DEBUG` | `false` | Debug mode |
-| `REQUEST_TIMEOUT` | `30` | HTTP request timeout (seconds) |
-
-## 🏃‍♂️ Running the Server
-
-### Python MCP Server
-
-```bash
-cd python-mcp-server/
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run stdio transport
+# Запуск STDIO режима
 python -m src.server
 
-# Run with custom endpoint
-CRAWL4AI_ENDPOINT=https://your-server.com python -m src.server
+# Запуск HTTP режима
+python -m src.server --http
 
-# Docker
-docker-compose up --build
+# Запуск SSE режима
+python -m src.server --sse
 ```
 
-### Testing with TypeScript Tester
+## ⚙️ Конфигурация
+
+### Переменные окружения
 
 ```bash
-cd mcp-server-tester/
+# ОБЯЗАТЕЛЬНЫЕ
+export CRAWL4AI_ENDPOINT="https://your-crawl4ai-api.com"
 
-# Install dependencies
-npm install
-
-# Build TypeScript
-npm run build
-
-# Run all tests
-npm test
-
-# Test specific tools
-node dist/cli.js tools test-all-tools.yaml --server-config ../server-config.example.json
+# ОПЦИОНАЛЬНЫЕ
+export CRAWL4AI_BEARER_TOKEN="your-bearer-token"
+export HTTP_PORT="3000"
+export SSE_PORT="9001"
+export LOG_LEVEL="INFO"
+export DEBUG="false"
+export REQUEST_TIMEOUT="30"
 ```
 
-## 🔒 Authentication
+### Конфигурация MCP клиента
 
-### Bearer Token Setup
-
-1. **Environment Variable**: Set `BEARER_TOKEN=your_token`
-2. **HTTP Header**: Include `Authorization: Bearer your_token`
-
-### Example Configuration
+Добавьте в ваш `.mcp.json`:
 
 ```json
 {
   "mcpServers": {
     "crawl4ai": {
-      "transport": "http",
-      "url": "https://your-server.com/mcp",
-      "bearerToken": "your_bearer_token_here"
+      "transport": "stdio",
+      "command": "python",
+      "args": ["-m", "python-mcp-server.src.server"],
+      "env": {
+        "CRAWL4AI_ENDPOINT": "https://your-server.com",
+        "CRAWL4AI_BEARER_TOKEN": "your-token"
+      }
     }
   }
 }
 ```
 
-For nginx proxy setup, see [BEARER_AUTH.md](BEARER_AUTH.md).
+Для HTTP транспорта:
 
-## 🧪 Testing
+```json
+{
+  "mcpServers": {
+    "crawl4ai-http": {
+      "transport": "http",
+      "url": "http://localhost:3000/mcp",
+      "bearerToken": "your-bearer-token"
+    }
+  }
+}
+```
 
-### Unit Tests
+## 🐳 Docker команды
+
 ```bash
-cd mcp-server-tester/
+# Разработка
+docker build -t crawl4ai-mcp:dev .
+docker run --rm -p 3000:3000 crawl4ai-mcp:dev
+
+# Продакшн с переменными окружения
+docker run -d --name crawl4ai-mcp \
+  -p 3000:3000 \
+  -e CRAWL4AI_ENDPOINT="https://api.crawl4ai.com" \
+  -e CRAWL4AI_BEARER_TOKEN="sk_..." \
+  -e LOG_LEVEL="INFO" \
+  --restart unless-stopped \
+  crawl4ai-mcp:latest
+
+# Проверка здоровья
+docker exec crawl4ai-mcp curl -f http://localhost:3000/health
+
+# Логи
+docker logs -f crawl4ai-mcp
+
+# Остановка
+docker stop crawl4ai-mcp && docker rm crawl4ai-mcp
+```
+
+### Docker Compose
+
+```yaml
+version: '3.8'
+services:
+  crawl4ai-mcp:
+    build: ./python-mcp-server
+    ports:
+      - "3000:3000"
+      - "9001:9001"
+    environment:
+      - CRAWL4AI_ENDPOINT=https://your-api.com
+      - CRAWL4AI_BEARER_TOKEN=your-token
+      - LOG_LEVEL=INFO
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+```
+
+## 🧪 Тестирование
+
+```bash
+# TypeScript тестер
+cd mcp-server-tester
+npm install && npm run build
+
+# Запуск всех тестов
+npm test
+
+# Тест конкретных инструментов
+node dist/cli.js tools test-all-tools.yaml --server-config ../server-config.example.json
+
+# Локальное тестирование
+cp server-config.example.json server-config.json
+# Отредактируйте server-config.json с вашими параметрами
 npm test
 ```
 
-### Tool Testing
-```bash
-# Test all tools
-node dist/cli.js tools test-all-tools.yaml --server-config server-config.json
+## 📁 Структура проекта
 
-# Test with local server
-cp server-config.example.json server-config.json
-# Edit server-config.json with your values
-node dist/cli.js tools test-all-tools.yaml --server-config server-config.json
+```
+crawl4ai-mcp/
+├── python-mcp-server/          # Python MCP сервер
+│   ├── src/                    # Исходный код
+│   │   ├── handles/            # Обработчики инструментов
+│   │   ├── config/             # Конфигурация
+│   │   └── server.py           # Главный сервер
+│   ├── tests/                  # Python тесты
+│   ├── Dockerfile              # Multi-stage Docker сборка
+│   ├── docker-compose.yml      # Docker Compose конфиг
+│   ├── requirements.txt        # Python зависимости
+│   └── pyproject.toml          # Python конфигурация
+├── mcp-server-tester/          # TypeScript тестер
+│   ├── src/                    # TypeScript исходники
+│   ├── test/                   # Тестовые сюиты
+│   ├── examples/               # Примеры использования
+│   └── test-all-tools.yaml     # Конфигурация тестов
+├── .github/workflows/          # CI/CD пайплайны
+├── server-config.example.json  # Пример конфигурации
+├── BEARER_AUTH.md              # Руководство по аутентификации
+└── README.md                   # Эта документация
 ```
 
-## 🌐 Supported Transports
+## 🔒 Безопасность
 
-- **stdio**: Standard input/output for local usage
-- **HTTP**: Remote access via HTTP API with Bearer token support
+### Bearer Token аутентификация
 
-## 📄 License
+Для производственного использования настройте Bearer токен:
 
-MIT License - see [LICENSE](LICENSE) file for details.
+```bash
+# Установка токена
+export CRAWL4AI_BEARER_TOKEN="sk_your_secure_token_here"
+
+# HTTP заголовок
+Authorization: Bearer sk_your_secure_token_here
+```
+
+Подробности в [BEARER_AUTH.md](BEARER_AUTH.md).
+
+### Рекомендации безопасности
+
+- ✅ Всегда используйте HTTPS в продакшне
+- ✅ Настройте сильные Bearer токены
+- ✅ Ограничьте доступ по IP (nginx/cloudflare)
+- ✅ Регулярно ротируйте токены
+- ✅ Мониторьте подозрительную активность
+
+## 📊 Мониторинг и логирование
+
+```bash
+# Проверка здоровья
+curl http://localhost:3000/health
+
+# Структурированные логи (JSON)
+docker logs crawl4ai-mcp | jq '.'
+
+# Метрики производительности
+docker stats crawl4ai-mcp
+```
+
+## 🚀 Производственное развертывание
+
+### Системные требования
+
+- **CPU**: 2+ ядра
+- **RAM**: 1GB+ (рекомендуется 2GB)
+- **Storage**: 1GB+
+- **Network**: Стабильное соединение
+- **Docker**: 20.10+
+
+### Reverse Proxy (nginx)
+
+```nginx
+upstream crawl4ai-mcp {
+    server 127.0.0.1:3000;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name api.yourdomain.com;
+
+    # SSL конфигурация...
+
+    location /mcp {
+        proxy_pass http://crawl4ai-mcp;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Authorization $http_authorization;
+    }
+}
+```
+
+## 🤝 Разработка
+
+```bash
+# Клонирование
+git clone https://github.com/stgmt/crawl4ai-mcp.git
+cd crawl4ai-mcp
+
+# Установка зависимостей
+cd python-mcp-server && pip install -r requirements.txt
+cd ../mcp-server-tester && npm install
+
+# Линтинг и проверки
+cd python-mcp-server
+ruff check .
+mypy src --ignore-missing-imports
+
+cd ../mcp-server-tester
+npm run lint
+npm run typecheck
+
+# Запуск в режиме разработки
+python -m src.server --debug
+```
+
+## 📝 Лицензия
+
+MIT License - см. [LICENSE](LICENSE) для деталей.
+
+## 🆘 Поддержка
+
+- **Issues**: [GitHub Issues](https://github.com/stgmt/crawl4ai-mcp/issues)
+- **Документация**: [Полная документация](docs/)
+- **Примеры**: [examples/](examples/)
 
 ---
 
-**Ready for production use with comprehensive security and testing.**
+**Готов к продакшн использованию с комплексной системой безопасности и тестирования.**
