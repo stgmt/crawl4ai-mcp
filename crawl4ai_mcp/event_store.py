@@ -5,12 +5,16 @@ Fixes the store_event() TypeError by matching the MCP SDK interface.
 
 import logging
 import uuid
-from typing import Any, Callable
+from collections.abc import Awaitable, Callable
+from typing import Any
+
+from mcp.server.streamable_http import EventStore as McpEventStore, EventMessage
+from mcp.types import JSONRPCMessage
 
 logger = logging.getLogger(__name__)
 
 
-class CorrectEventStore:
+class EventStore(McpEventStore):
     """
     EventStore implementation that matches MCP SDK's EventStore ABC.
 
@@ -20,11 +24,11 @@ class CorrectEventStore:
 
     def __init__(self) -> None:
         # Store events as: {stream_id: [(event_id, message), ...]}
-        self.events: dict[str, list[tuple[str, dict]]] = {}
+        self.events: dict[str, list[tuple[str, JSONRPCMessage]]] = {}
         self.event_counter = 0
-        logger.info("Initialized CorrectEventStore with proper signature")
+        logger.info("Initialized EventStore with proper signature")
 
-    async def store_event(self, stream_id: str, message: dict) -> str:
+    async def store_event(self, stream_id: str, message: JSONRPCMessage) -> str:
         """
         Store an event for a specific stream.
 
@@ -50,7 +54,7 @@ class CorrectEventStore:
         return event_id
 
     async def replay_events_after(
-        self, last_event_id: str, send_callback: Callable[[dict[str, Any]], Any]
+        self, last_event_id: str, send_callback: Callable[[EventMessage], Awaitable[None]]
     ) -> str | None:
         """
         Replay events after a specific event ID.
@@ -79,7 +83,7 @@ class CorrectEventStore:
                     # Replay all events after this one
                     for future_event_id, future_message in events[i + 1 :]:
                         await send_callback(
-                            {"message": future_message, "event_id": future_event_id}
+                            EventMessage(message=future_message, event_id=future_event_id)
                         )
                         logger.debug(f"Replayed event {future_event_id}")
 
@@ -88,7 +92,7 @@ class CorrectEventStore:
         logger.warning(f"Event {last_event_id} not found in any stream")
         return None
 
-    async def get_events(self, stream_id: str | None = None) -> list[tuple[str, dict]]:
+    async def get_events(self, stream_id: str | None = None) -> list[tuple[str, JSONRPCMessage]]:
         """
         Get all events for a stream (or all streams if stream_id is None).
 
@@ -123,16 +127,15 @@ class SimpleEventStore:
     Still implements the correct signature to avoid errors.
     """
 
-    async def store_event(self, stream_id: str, message: dict) -> str:
+    async def store_event(self, stream_id: str, message: JSONRPCMessage) -> str:
         """Simply return a dummy event ID without storing."""
         return f"evt_{uuid.uuid4().hex[:8]}"
 
     async def replay_events_after(
-        self, last_event_id: str, send_callback: Callable[[dict[str, Any]], Any]
+        self, last_event_id: str, send_callback: Callable[[EventMessage], Awaitable[None]]
     ) -> str | None:
         """No events to replay in simple mode."""
         return None
 
 
-# Default export - use CorrectEventStore as the default EventStore
-EventStore = CorrectEventStore
+# EventStore is now the main class

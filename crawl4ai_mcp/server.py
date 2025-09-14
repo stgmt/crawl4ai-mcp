@@ -162,7 +162,7 @@ class Crawl4AIMCPServer:
         event_store = EventStore()
         session_manager = StreamableHTTPSessionManager(
             app=self.server,
-            event_store=event_store,  # type: ignore[arg-type]
+            event_store=event_store,
             json_response=json_response,
         )
 
