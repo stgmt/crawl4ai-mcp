@@ -1,0 +1,97 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Run security scan with Bandit
+      uses: securecodewarrior/github-action-bandit@v1
+      with:
+        path: python-mcp-server/src
+
+    - name: Scan for secrets
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: main
+        head: HEAD
+
+  type-checking:
+    name: Type Checking
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install Python dependencies
+      run: |
+        cd python-mcp-server
+        pip install -r requirements.txt
+        pip install mypy types-requests
+
+    - name: Install Node dependencies
+      run: |
+        cd mcp-server-tester
+        npm ci
+
+    - name: Run Python type checking (mypy)
+      run: |
+        cd python-mcp-server
+        mypy src --ignore-missing-imports
+
+    - name: Run TypeScript type checking
+      run: |
+        cd mcp-server-tester
+        npm run typecheck
+
+  documentation:
+    name: Documentation Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Check README exists
+      run: |
+        test -f README.md
+        test -f python-mcp-server/README.md || echo "Python README missing"
+        test -f mcp-server-tester/README.md || echo "TypeScript README missing"
+
+    - name: Check documentation completeness
+      run: |
+        grep -q "Installation" README.md
+        grep -q "Usage" README.md
+        grep -q "Configuration" README.md
+
+    - name: Validate JSON files
+      run: |
+        python -m json.tool server-config.example.json > /dev/null
+        find . -name "*.json" -exec python -m json.tool {} \; > /dev/null
+
+    - name: Check Dockerfile best practices
+      uses: hadolint/hadolint-action@v3.1.0
+      with:
+        dockerfile: python-mcp-server/Dockerfile
