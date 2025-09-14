@@ -136,4 +136,4 @@ jobs:
         run: ruff check crawl4ai_mcp/
       
       - name: Type check with mypy
-        run: mypy crawl4ai_mcp/ --ignore-missing-imports
+        run: mypy crawl4ai_mcp/ --ignore-missing-imports --python-version 3.11
