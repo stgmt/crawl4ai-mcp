@@ -6,9 +6,9 @@ Fixes the store_event() TypeError by matching the MCP SDK interface.
 import logging
 import uuid
 from collections.abc import Awaitable, Callable
-from typing import Any
 
-from mcp.server.streamable_http import EventStore as McpEventStore, EventMessage
+from mcp.server.streamable_http import EventMessage
+from mcp.server.streamable_http import EventStore as McpEventStore
 from mcp.types import JSONRPCMessage
 
 logger = logging.getLogger(__name__)
