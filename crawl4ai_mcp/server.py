@@ -244,7 +244,7 @@ Examples:
     )
 
     parser.add_argument(
-        "--token", type=str, help="Bearer authentication token (overrides CRAWL4AI_BEARER_TOKEN env var)"
+        "--bearer-token", type=str, help="Bearer authentication token (overrides CRAWL4AI_BEARER_TOKEN env var)"
     )
 
     parser.add_argument(
@@ -266,8 +266,8 @@ def main() -> None:
     if args.endpoint:
         os.environ["CRAWL4AI_ENDPOINT"] = args.endpoint
 
-    if args.token:
-        os.environ["CRAWL4AI_BEARER_TOKEN"] = args.token
+    if args.bearer_token:
+        os.environ["CRAWL4AI_BEARER_TOKEN"] = args.bearer_token
 
     # Reload settings to pick up any new values
     from crawl4ai_mcp.config.settings import Settings
