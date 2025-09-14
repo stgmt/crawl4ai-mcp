@@ -102,7 +102,7 @@ crawl4ai-mcp --http
 crawl4ai-mcp --stdio --endpoint https://your-crawl4ai-server.com
 
 # With optional bearer token
-crawl4ai-mcp --endpoint https://your-crawl4ai-server.com --token your-optional-token
+crawl4ai-mcp --endpoint https://your-crawl4ai-server.com --bearer-token your-optional-token
 ```
 
 ## 🚀 Features
@@ -172,7 +172,7 @@ crawl4ai-mcp --stdio --endpoint https://your-crawl4ai-server.com
 
 # With optional bearer token (env + args)
 export CRAWL4AI_BEARER_TOKEN="your-optional-token"
-crawl4ai-mcp --endpoint https://your-crawl4ai-server.com --token your-optional-token
+crawl4ai-mcp --endpoint https://your-crawl4ai-server.com --bearer-token your-optional-token
 
 # All via environment variables
 export CRAWL4AI_ENDPOINT="https://your-crawl4ai-server.com"
@@ -395,7 +395,7 @@ Options:
   --sse                Run in SSE mode for web interfaces (default)
   --http               Run in HTTP mode
   --endpoint ENDPOINT  Crawl4AI API endpoint URL (overrides CRAWL4AI_ENDPOINT)
-  --token TOKEN        Bearer authentication token (overrides CRAWL4AI_BEARER_TOKEN)
+  --bearer-token TOKEN        Bearer authentication token (overrides CRAWL4AI_BEARER_TOKEN)
   --version, -v        Show program's version number and exit
 ```
 
