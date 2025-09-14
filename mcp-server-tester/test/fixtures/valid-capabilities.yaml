@@ -1,0 +1,23 @@
+# Valid test configuration with tools section
+tools:
+  expected_tool_list: ['echo', 'add']
+  tests:
+    - name: 'test_echo'
+      tool: 'echo'
+      params:
+        message: 'test message'
+      expect:
+        success: true
+        result:
+          contains: 'Echo: test message'
+
+    - name: 'test_add_multi_step'
+      calls:
+        - tool: 'add'
+          params:
+            a: 5
+            b: 3
+          expect:
+            success: true
+            result:
+              contains: '5 + 3 = 8'

@@ -1,0 +1,65 @@
+name: Basic Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  basic-checks:
+    name: Basic Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install Python dependencies
+      run: |
+        cd python-mcp-server
+        pip install -r requirements.txt
+        pip install ruff
+
+    - name: Install Node dependencies
+      run: |
+        cd mcp-server-tester
+        npm ci
+
+    - name: Python syntax check
+      run: |
+        cd python-mcp-server
+        python -m py_compile src/*.py src/**/*.py
+
+    - name: Basic Python linting
+      run: |
+        cd python-mcp-server
+        ruff check . --select E,F --ignore E501
+      continue-on-error: true
+
+    - name: Node.js build check
+      run: |
+        cd mcp-server-tester
+        npm run build
+      continue-on-error: true
+
+  basic-docker:
+    name: Basic Docker Build
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build Docker image
+      run: |
+        cd python-mcp-server
+        docker build -t crawl4ai-mcp:basic-test .

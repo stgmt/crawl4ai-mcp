@@ -1,0 +1,268 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Unified Test Configuration",
+  "description": "Schema for MCP unified test configuration files supporting multiple capabilities",
+  "type": "object",
+  "minProperties": 1,
+  "properties": {
+    "tools": {
+      "type": "object",
+      "properties": {
+        "expected_tool_list": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of tools that must be available from tools/list"
+        },
+        "tests": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/toolTest"
+          },
+          "description": "Array of tool capability tests to run"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["tests"]
+    },
+    "evals": {
+      "type": "object",
+      "properties": {
+        "models": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          },
+          "description": "List of LLM models to test with"
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 5000,
+          "description": "Test timeout in milliseconds"
+        },
+        "max_steps": {
+          "type": "number",
+          "minimum": 1,
+          "description": "Maximum number of conversation steps"
+        },
+        "tests": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/evalTest"
+          },
+          "description": "Array of LLM evaluation (eval) tests to run"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["tests"]
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "toolTest": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/singleToolTest"
+        },
+        {
+          "$ref": "#/definitions/multiStepTest"
+        }
+      ]
+    },
+    "singleToolTest": {
+      "type": "object",
+      "required": ["name", "tool", "params", "expect"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable test name"
+        },
+        "tool": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Name of the tool to call"
+        },
+        "params": {
+          "type": "object",
+          "description": "Parameters to pass to the tool"
+        },
+        "expect": {
+          "$ref": "#/definitions/expectation"
+        }
+      },
+      "additionalProperties": false
+    },
+    "multiStepTest": {
+      "type": "object",
+      "required": ["name", "calls"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable test name"
+        },
+        "calls": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/toolCall"
+          },
+          "description": "Array of tool calls to make"
+        }
+      },
+      "additionalProperties": false
+    },
+    "toolCall": {
+      "type": "object",
+      "required": ["tool", "params", "expect"],
+      "properties": {
+        "tool": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Name of the tool to call"
+        },
+        "params": {
+          "type": "object",
+          "description": "Parameters to pass to the tool"
+        },
+        "expect": {
+          "$ref": "#/definitions/expectation"
+        }
+      },
+      "additionalProperties": false
+    },
+    "expectation": {
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "description": "Whether the call should succeed"
+        },
+        "result": {
+          "type": "object",
+          "properties": {
+            "contains": {
+              "type": "string",
+              "description": "Text that should be contained in the result"
+            },
+            "equals": {
+              "description": "Exact value the result should equal"
+            },
+            "schema": {
+              "description": "JSON schema the result should validate against"
+            }
+          },
+          "additionalProperties": false,
+          "description": "Expected result validation (only used when success=true)"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "contains": {
+              "type": "string",
+              "description": "Text that should be contained in the error message"
+            }
+          },
+          "additionalProperties": false,
+          "description": "Expected error validation (only used when success=false)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "evalTest": {
+      "type": "object",
+      "required": ["name", "prompt"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable test name"
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Prompt to send to the LLM"
+        },
+        "expected_tool_calls": {
+          "type": "object",
+          "properties": {
+            "required": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Tools that must be called"
+            },
+            "allowed": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Tools that are allowed to be called (if not specified, all tools are allowed)"
+            }
+          },
+          "additionalProperties": false,
+          "description": "Tool call validation rules"
+        },
+        "response_scorers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/scorer"
+          },
+          "description": "Response quality scoring methods"
+        }
+      },
+      "additionalProperties": false
+    },
+    "scorer": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["regex", "llm-judge"],
+          "description": "Type of scorer to use"
+        },
+        "pattern": {
+          "type": "string",
+          "description": "Regex pattern to match (required for regex type)"
+        },
+        "criteria": {
+          "type": "string",
+          "description": "Criteria for LLM judge (required for llm-judge type)"
+        },
+        "threshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Threshold for pass/fail (used with llm-judge)"
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "regex" } }
+          },
+          "then": {
+            "required": ["pattern"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "llm-judge" } }
+          },
+          "then": {
+            "required": ["criteria"]
+          }
+        }
+      ]
+    }
+  }
+}

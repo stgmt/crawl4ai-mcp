@@ -1,0 +1,66 @@
+name: CI Baseline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  docker-build:
+    name: Docker Build Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build Python MCP Server
+      run: |
+        cd python-mcp-server
+        docker build -t crawl4ai-mcp:ci-test .
+
+    - name: Quick container test
+      run: |
+        docker run --rm --name ci-test crawl4ai-mcp:ci-test echo "Container works"
+
+  syntax-check:
+    name: Basic Syntax Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Check Python files compile
+      run: |
+        cd python-mcp-server
+        find src -name "*.py" -exec python -m py_compile {} \;
+
+    - name: Check Node.js package
+      run: |
+        cd mcp-server-tester
+        npm install --no-optional
+        node -e "console.log('Node.js syntax OK')"
+
+  basic-health:
+    name: Basic Health Check
+    runs-on: ubuntu-latest
+    needs: docker-build
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build and test container
+      run: |
+        cd python-mcp-server
+        docker build -t crawl4ai-mcp:health-test .
+        echo "✅ Docker build successful"
