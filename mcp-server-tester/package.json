@@ -1,0 +1,79 @@
+{
+  "name": "mcp-server-tester",
+  "version": "1.4.0",
+  "description": "Standalone CLI tool for testing Model Context Protocol (MCP) servers",
+  "main": "dist/cli.js",
+  "bin": {
+    "mcp-server-tester": "dist/cli.js"
+  },
+  "scripts": {
+    "dev": "tsx src/cli.ts",
+    "test": "vitest run",
+    "test:unit": "vitest run test/unit",
+    "test:e2e": "vitest run test/e2e",
+    "test:e2e:commands": "vitest run test/e2e/commands",
+    "test:e2e:compliance": "vitest run test/e2e/compliance",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "build": "tsc",
+    "start": "tsx src/cli.ts",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "type": "module",
+  "keywords": [
+    "mcp",
+    "testing",
+    "cli",
+    "model-context-protocol"
+  ],
+  "author": "Stevie Clifton",
+  "license": "MIT",
+  "dependencies": {
+    "@ai-sdk/anthropic": "^1.0.0",
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "ai": "^4.0.0",
+    "ajv": "^8.12.0",
+    "commander": "^12.0.0",
+    "debug": "^4.3.0",
+    "fast-xml-parser": "^5.2.5",
+    "yaml": "^2.0.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.30.1",
+    "@types/debug": "^4.1.0",
+    "@types/node": "^22.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.36.0",
+    "@typescript-eslint/parser": "^8.36.0",
+    "@vitest/ui": "^3.2.4",
+    "dotenv-cli": "^8.0.0",
+    "eslint": "^9.30.1",
+    "globals": "^16.3.0",
+    "lefthook": "^1.12.1",
+    "prettier": "^3.6.2",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/steviec/mcp-server-tester.git"
+  },
+  "bugs": {
+    "url": "https://github.com/steviec/mcp-server-tester/issues"
+  },
+  "homepage": "https://github.com/steviec/mcp-server-tester#readme"
+}

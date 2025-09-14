@@ -1,0 +1,46 @@
+tools:
+  expected_tool_list:
+    - md
+    - html
+    - screenshot
+    - pdf
+    - execute_js
+    - crawl
+    
+  tests:
+    - name: Test md tool - Convert to Markdown
+      tool: md
+      params:
+        url: "https://example.com"
+        f: "fit"
+      expect:
+        success: true
+        result:
+          contains: "Example Domain"
+    
+    - name: Test html tool - Get HTML content
+      tool: html
+      params:
+        url: "https://example.com"
+      expect:
+        success: true
+        result:
+          contains: "<h1>"
+    
+    - name: Test execute_js - Run JavaScript
+      tool: execute_js
+      params:
+        url: "https://example.com"
+        scripts: 
+          - "document.title"
+          - "document.querySelector('h1').textContent"
+      expect:
+        success: true
+    
+    - name: Test crawl - Multiple URLs
+      tool: crawl
+      params:
+        urls: 
+          - "https://example.com"
+      expect:
+        success: true
