@@ -18,7 +18,7 @@ class Settings:
     SSE_PORT: int = int(os.getenv("SSE_PORT", "9001"))
 
     # Authentication
-    BEARER_TOKEN: str | None = os.getenv("BEARER_TOKEN")
+    CRAWL4AI_BEARER_TOKEN: str | None = os.getenv("CRAWL4AI_BEARER_TOKEN")
 
     # Logging
     LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")

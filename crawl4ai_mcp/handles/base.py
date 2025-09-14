@@ -35,8 +35,8 @@ class BaseHandler(abc.ABC):
         try:
             async with httpx.AsyncClient(timeout=settings.REQUEST_TIMEOUT) as client:
                 headers = {"Content-Type": "application/json"}
-                if settings.BEARER_TOKEN:
-                    headers["Authorization"] = f"Bearer {settings.BEARER_TOKEN}"
+                if settings.CRAWL4AI_BEARER_TOKEN:
+                    headers["Authorization"] = f"Bearer {settings.CRAWL4AI_BEARER_TOKEN}"
 
                 # Detailed request logging
                 logger.info(f"Calling crawl4ai API: {url}")

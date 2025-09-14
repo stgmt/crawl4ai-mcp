@@ -207,7 +207,7 @@ def parse_arguments() -> argparse.Namespace:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""Environment variables:
   CRAWL4AI_ENDPOINT    Crawl4AI service endpoint URL (required)
-  BEARER_TOKEN         Authentication token for API access
+  CRAWL4AI_BEARER_TOKEN         Authentication token for API access
 
 Examples:
   # Run in default SSE mode
@@ -217,12 +217,12 @@ Examples:
   crawl4ai-mcp --stdio --endpoint https://my-crawl4ai.com
 
   # Set authentication token
-  export BEARER_TOKEN="your-api-token"
+  export CRAWL4AI_BEARER_TOKEN="your-api-token"
   crawl4ai-mcp --http
 
   # Local development setup
   export CRAWL4AI_ENDPOINT="http://localhost:8000"
-  export BEARER_TOKEN="dev-token"
+  export CRAWL4AI_BEARER_TOKEN="dev-token"
   crawl4ai-mcp --sse""",
     )
 
@@ -244,7 +244,7 @@ Examples:
     )
 
     parser.add_argument(
-        "--token", type=str, help="Bearer authentication token (overrides BEARER_TOKEN env var)"
+        "--token", type=str, help="Bearer authentication token (overrides CRAWL4AI_BEARER_TOKEN env var)"
     )
 
     parser.add_argument(
@@ -267,7 +267,7 @@ def main() -> None:
         os.environ["CRAWL4AI_ENDPOINT"] = args.endpoint
 
     if args.token:
-        os.environ["BEARER_TOKEN"] = args.token
+        os.environ["CRAWL4AI_BEARER_TOKEN"] = args.token
 
     # Reload settings to pick up any new values
     from crawl4ai_mcp.config.settings import Settings
@@ -294,7 +294,7 @@ def main() -> None:
 
     logger.info("🚀 Crawl4AI MCP Server starting")
     logger.info(f"📍 Endpoint: {current_settings.CRAWL4AI_ENDPOINT}")
-    if current_settings.BEARER_TOKEN:
+    if current_settings.CRAWL4AI_BEARER_TOKEN:
         logger.info("🔐 Authentication: Bearer token configured")
     else:
         logger.info("⚠️  Authentication: No bearer token (public access)")

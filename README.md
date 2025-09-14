@@ -57,11 +57,11 @@ crawl4ai-mcp --stdio
 crawl4ai-mcp --stdio --endpoint https://your-crawl4ai-server.com
 
 # With optional bearer token
-export BEARER_TOKEN="your-token"
+export CRAWL4AI_BEARER_TOKEN="your-token"
 crawl4ai-mcp --stdio --endpoint https://your-crawl4ai-server.com
 
 # Or all in one command
-CRAWL4AI_ENDPOINT="https://your-crawl4ai-server.com" BEARER_TOKEN="your-token" crawl4ai-mcp --stdio
+CRAWL4AI_ENDPOINT="https://your-crawl4ai-server.com" CRAWL4AI_BEARER_TOKEN="your-token" crawl4ai-mcp --stdio
 ```
 
 ### With Claude Desktop
@@ -76,7 +76,7 @@ Add to your `claude_desktop_config.json`:
       "args": ["--stdio", "--endpoint", "https://your-crawl4ai-server.com"],
       "env": {
         "CRAWL4AI_ENDPOINT": "https://your-crawl4ai-server.com",
-        "BEARER_TOKEN": "your-optional-token"
+        "CRAWL4AI_BEARER_TOKEN": "your-optional-token"
       }
     }
   }
@@ -171,12 +171,12 @@ crawl4ai-mcp --http
 crawl4ai-mcp --stdio --endpoint https://your-crawl4ai-server.com
 
 # With optional bearer token (env + args)
-export BEARER_TOKEN="your-optional-token"
+export CRAWL4AI_BEARER_TOKEN="your-optional-token"
 crawl4ai-mcp --endpoint https://your-crawl4ai-server.com --token your-optional-token
 
 # All via environment variables
 export CRAWL4AI_ENDPOINT="https://your-crawl4ai-server.com"
-export BEARER_TOKEN="your-optional-token"
+export CRAWL4AI_BEARER_TOKEN="your-optional-token"
 crawl4ai-mcp --sse
 ```
 
@@ -371,7 +371,7 @@ crawl4ai-mcp --http
 CRAWL4AI_ENDPOINT=https://your-crawl4ai-server.com
 
 # Authentication token (optional)
-BEARER_TOKEN=your-api-token
+CRAWL4AI_BEARER_TOKEN=your-api-token
 
 # Server ports
 HTTP_PORT=3000
@@ -395,7 +395,7 @@ Options:
   --sse                Run in SSE mode for web interfaces (default)
   --http               Run in HTTP mode
   --endpoint ENDPOINT  Crawl4AI API endpoint URL (overrides CRAWL4AI_ENDPOINT)
-  --token TOKEN        Bearer authentication token (overrides BEARER_TOKEN)
+  --token TOKEN        Bearer authentication token (overrides CRAWL4AI_BEARER_TOKEN)
   --version, -v        Show program's version number and exit
 ```
 
@@ -407,7 +407,7 @@ Create `.env` file:
 # Required: Crawl4AI API endpoint
 CRAWL4AI_ENDPOINT=https://your-crawl4ai-server.com
 # Optional: Authentication token
-BEARER_TOKEN=your-api-token
+CRAWL4AI_BEARER_TOKEN=your-api-token
 # Server configuration
 HTTP_PORT=3000
 SSE_PORT=9001

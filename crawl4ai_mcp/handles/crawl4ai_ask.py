@@ -66,8 +66,8 @@ class Crawl4aiAsk(BaseHandler):
 
             async with httpx.AsyncClient(timeout=settings.REQUEST_TIMEOUT) as client:
                 headers = {}
-                if settings.BEARER_TOKEN:
-                    headers["Authorization"] = f"Bearer {settings.BEARER_TOKEN}"
+                if settings.CRAWL4AI_BEARER_TOKEN:
+                    headers["Authorization"] = f"Bearer {settings.CRAWL4AI_BEARER_TOKEN}"
 
                 # Try GET first, then POST if needed
                 try:
