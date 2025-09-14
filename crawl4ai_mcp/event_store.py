@@ -3,14 +3,18 @@ EventStore implementation for StreamableHTTP with correct signature.
 Fixes the store_event() TypeError by matching the MCP SDK interface.
 """
 
-from typing import Optional, Dict, List, Tuple, Callable, Any
-import uuid
 import logging
+import uuid
+from collections.abc import Awaitable, Callable
+
+from mcp.server.streamable_http import EventMessage
+from mcp.server.streamable_http import EventStore as McpEventStore
+from mcp.types import JSONRPCMessage
 
 logger = logging.getLogger(__name__)
 
 
-class CorrectEventStore:
+class EventStore(McpEventStore):
     """
     EventStore implementation that matches MCP SDK's EventStore ABC.
 
@@ -18,13 +22,13 @@ class CorrectEventStore:
     by implementing the correct method signature.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Store events as: {stream_id: [(event_id, message), ...]}
-        self.events: Dict[str, List[Tuple[str, dict]]] = {}
+        self.events: dict[str, list[tuple[str, JSONRPCMessage]]] = {}
         self.event_counter = 0
-        logger.info("Initialized CorrectEventStore with proper signature")
+        logger.info("Initialized EventStore with proper signature")
 
-    async def store_event(self, stream_id: str, message: dict) -> str:
+    async def store_event(self, stream_id: str, message: JSONRPCMessage) -> str:
         """
         Store an event for a specific stream.
 
@@ -50,8 +54,8 @@ class CorrectEventStore:
         return event_id
 
     async def replay_events_after(
-        self, last_event_id: str, send_callback: Callable[[Dict[str, Any]], Any]
-    ) -> Optional[str]:
+        self, last_event_id: str, send_callback: Callable[[EventMessage], Awaitable[None]]
+    ) -> str | None:
         """
         Replay events after a specific event ID.
 
@@ -69,7 +73,7 @@ class CorrectEventStore:
 
         # Find the stream and position of the last event
         for stream_id, events in self.events.items():
-            for i, (event_id, message) in enumerate(events):
+            for i, (event_id, _message) in enumerate(events):
                 if event_id == last_event_id:
                     # Found it! Replay all subsequent events
                     logger.info(
@@ -79,7 +83,7 @@ class CorrectEventStore:
                     # Replay all events after this one
                     for future_event_id, future_message in events[i + 1 :]:
                         await send_callback(
-                            {"message": future_message, "event_id": future_event_id}
+                            EventMessage(message=future_message, event_id=future_event_id)
                         )
                         logger.debug(f"Replayed event {future_event_id}")
 
@@ -88,7 +92,7 @@ class CorrectEventStore:
         logger.warning(f"Event {last_event_id} not found in any stream")
         return None
 
-    async def get_events(self, stream_id: Optional[str] = None) -> List[Tuple[str, dict]]:
+    async def get_events(self, stream_id: str | None = None) -> list[tuple[str, JSONRPCMessage]]:
         """
         Get all events for a stream (or all streams if stream_id is None).
 
@@ -109,7 +113,7 @@ class CorrectEventStore:
             all_events.extend(stream_events)
         return all_events
 
-    def clear(self):
+    def clear(self) -> None:
         """Clear all stored events (useful for testing)."""
         self.events.clear()
         self.event_counter = 0
@@ -123,16 +127,15 @@ class SimpleEventStore:
     Still implements the correct signature to avoid errors.
     """
 
-    async def store_event(self, stream_id: str, message: dict) -> str:
+    async def store_event(self, stream_id: str, message: JSONRPCMessage) -> str:
         """Simply return a dummy event ID without storing."""
         return f"evt_{uuid.uuid4().hex[:8]}"
 
     async def replay_events_after(
-        self, last_event_id: str, send_callback: Callable[[Dict[str, Any]], Any]
-    ) -> Optional[str]:
+        self, last_event_id: str, send_callback: Callable[[EventMessage], Awaitable[None]]
+    ) -> str | None:
         """No events to replay in simple mode."""
         return None
 
 
-# Default export - use CorrectEventStore as the default EventStore
-EventStore = CorrectEventStore
+# EventStore is now the main class

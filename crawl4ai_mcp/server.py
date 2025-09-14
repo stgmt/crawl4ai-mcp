@@ -4,12 +4,14 @@ Crawl4AI MCP Server - Main server implementation.
 Supports STDIO, SSE, and StreamableHTTP transports for MCP protocol.
 """
 
+import argparse
 import asyncio
 import contextlib
 import logging
+import os
 import sys
-from collections.abc import AsyncIterator
-from typing import Any, Dict, List, Optional, Sequence
+from collections.abc import AsyncIterator, Sequence
+from typing import Any
 
 import uvicorn
 from mcp.server.lowlevel import Server
@@ -24,7 +26,6 @@ from starlette.routing import Mount, Route
 from starlette.types import Receive, Scope, Send
 
 from crawl4ai_mcp.config.settings import settings
-from crawl4ai_mcp.event_store import EventStore
 from crawl4ai_mcp.handles import ToolRegistry
 
 # Configure logging
@@ -51,7 +52,7 @@ class Crawl4AIMCPServer:
         """Set up MCP protocol handlers."""
 
         @self.server.list_tools()
-        async def list_tools() -> List[Tool]:
+        async def list_tools() -> list[Tool]:
             """List all available Crawl4AI tools.
 
             Returns:
@@ -61,7 +62,7 @@ class Crawl4AIMCPServer:
             return ToolRegistry.get_all_tools()
 
         @self.server.call_tool()
-        async def call_tool(name: str, arguments: Dict[str, Any]) -> Sequence[TextContent]:
+        async def call_tool(name: str, arguments: dict[str, Any]) -> Sequence[TextContent]:
             """Execute a Crawl4AI tool.
 
             Args:
@@ -100,7 +101,7 @@ class Crawl4AIMCPServer:
                 logger.error(f"STDIO server error: {str(e)}")
                 raise
 
-    def run_sse(self, host: str = "0.0.0.0", port: Optional[int] = None) -> None:
+    def run_sse(self, host: str = "0.0.0.0", port: int | None = None) -> None:
         """Run server in SSE mode for web-based MCP clients.
 
         Args:
@@ -144,7 +145,7 @@ class Crawl4AIMCPServer:
         uvicorn.run(starlette_app, host=host, port=port)
 
     def run_http(
-        self, host: str = "0.0.0.0", port: Optional[int] = None, json_response: bool = False
+        self, host: str = "0.0.0.0", port: int | None = None, json_response: bool = False
     ) -> None:
         """Run server in StreamableHTTP mode for web integration.
 
@@ -155,6 +156,8 @@ class Crawl4AIMCPServer:
         """
         port = port or settings.HTTP_PORT
         logger.info(f"Starting Crawl4AI MCP server in StreamableHTTP mode on {host}:{port}")
+
+        from crawl4ai_mcp.event_store import EventStore
 
         event_store = EventStore()
         session_manager = StreamableHTTPSessionManager(
@@ -196,35 +199,120 @@ class Crawl4AIMCPServer:
         uvicorn.run(starlette_app, host=host, port=port)
 
 
+def parse_arguments() -> argparse.Namespace:
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(
+        prog="crawl4ai-mcp",
+        description="Crawl4AI MCP Server - Universal web crawling and data extraction through MCP (Model Context Protocol)",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""Environment variables:
+  CRAWL4AI_ENDPOINT    Crawl4AI service endpoint URL (required)
+  CRAWL4AI_BEARER_TOKEN         Authentication token for API access
+
+Examples:
+  # Run in default SSE mode
+  crawl4ai-mcp
+
+  # Run in STDIO mode with custom endpoint
+  crawl4ai-mcp --stdio --endpoint https://my-crawl4ai.com
+
+  # Set authentication token
+  export CRAWL4AI_BEARER_TOKEN="your-api-token"
+  crawl4ai-mcp --http
+
+  # Local development setup
+  export CRAWL4AI_ENDPOINT="http://localhost:8000"
+  export CRAWL4AI_BEARER_TOKEN="dev-token"
+  crawl4ai-mcp --sse""",
+    )
+
+    # Mode selection (mutually exclusive)
+    mode_group = parser.add_mutually_exclusive_group()
+    mode_group.add_argument(
+        "--stdio", action="store_true", help="Run in STDIO mode for MCP clients"
+    )
+    mode_group.add_argument(
+        "--sse", action="store_true", help="Run in SSE mode for web interfaces (default)"
+    )
+    mode_group.add_argument("--http", action="store_true", help="Run in HTTP mode")
+
+    # Configuration options
+    parser.add_argument(
+        "--endpoint",
+        type=str,
+        help="Crawl4AI API endpoint URL (overrides CRAWL4AI_ENDPOINT env var)",
+    )
+
+    parser.add_argument(
+        "--bearer-token",
+        type=str,
+        help="Bearer authentication token (overrides CRAWL4AI_BEARER_TOKEN env var)",
+    )
+
+    parser.add_argument(
+        "--version",
+        "-v",
+        action="version",
+        version=f"%(prog)s {__import__('crawl4ai_mcp').__version__}",
+    )
+
+    return parser.parse_args()
+
+
 def main() -> None:
     """Main entry point for the server."""
+    # Parse command line arguments
+    args = parse_arguments()
+
+    # Override settings with command line arguments if provided
+    if args.endpoint:
+        os.environ["CRAWL4AI_ENDPOINT"] = args.endpoint
+
+    if args.bearer_token:
+        os.environ["CRAWL4AI_BEARER_TOKEN"] = args.bearer_token
+
+    # Reload settings to pick up any new values
+    from crawl4ai_mcp.config.settings import Settings
+
+    current_settings = Settings()
+
+    # Validate required environment variables
+    if not current_settings.CRAWL4AI_ENDPOINT:
+        print("❌ ERROR: CRAWL4AI_ENDPOINT is required!")
+        print()
+        print("Set it via environment variable or command line:")
+        print("  export CRAWL4AI_ENDPOINT='https://your-crawl4ai-server.com'")
+        print("  OR")
+        print("  crawl4ai-mcp --endpoint https://your-crawl4ai-server.com")
+        print()
+        print("Example endpoints:")
+        print("  - https://stigmat-rudnev.crawl4ai-dev.fvds.ru (default)")
+        print("  - http://localhost:8000 (local development)")
+        print()
+        sys.exit(1)
+
+    # Initialize server and start logging
     server = Crawl4AIMCPServer()
 
-    logger.info(f"🚀 Crawl4AI MCP Server starting")
-    logger.info(f"📍 Endpoint: {settings.CRAWL4AI_ENDPOINT}")
-    logger.info(f"🛠️ Available tools: md, html, screenshot, pdf, execute_js, crawl")
-
-    # Parse command line arguments
-    if len(sys.argv) > 1:
-        mode = sys.argv[1].lower()
-
-        if mode == "--stdio":
-            logger.info("Running in STDIO mode")
-            asyncio.run(server.run_stdio())
-        elif mode == "--sse":
-            logger.info("Running in SSE mode")
-            server.run_sse()
-        elif mode == "--http":
-            logger.info("Running in HTTP mode")
-            server.run_http()
-        else:
-            logger.error(f"Unknown mode: {mode}")
-            print(f"Usage: {sys.argv[0]} [--stdio|--sse|--http]")
-            sys.exit(1)
+    logger.info("🚀 Crawl4AI MCP Server starting")
+    logger.info(f"📍 Endpoint: {current_settings.CRAWL4AI_ENDPOINT}")
+    if current_settings.CRAWL4AI_BEARER_TOKEN:
+        logger.info("🔐 Authentication: Bearer token configured")
     else:
-        # Default to HTTP mode
-        logger.info("No mode specified, defaulting to HTTP mode")
+        logger.info("⚠️  Authentication: No bearer token (public access)")
+    logger.info("🛠️ Available tools: md, html, screenshot, pdf, execute_js, crawl")
+
+    # Determine mode
+    if args.stdio:
+        logger.info("Running in STDIO mode")
+        asyncio.run(server.run_stdio())
+    elif args.http:
+        logger.info("Running in HTTP mode")
         server.run_http()
+    else:
+        # Default to SSE mode (or if --sse explicitly specified)
+        logger.info("Running in SSE mode")
+        server.run_sse()
 
 
 if __name__ == "__main__":
