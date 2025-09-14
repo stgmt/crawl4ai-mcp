@@ -24,7 +24,7 @@ class BaseHandler(abc.ABC):
         """Execute the tool with given arguments"""
         pass
     
-    async def call_crawl4ai_api(self, endpoint: str, data: Dict[str, Any]) -> Dict[str, Any]:
+    async def call_crawl4ai_api(self, endpoint: str, data: Dict[str, Any]) -> Any:
         """Make HTTP call to crawl4ai API"""
         url = settings.get_crawl4ai_url(endpoint)
         
