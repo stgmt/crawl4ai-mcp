@@ -51,7 +51,7 @@ class Crawl4aiHtml(BaseHandler):
             else:
                 content = str(result)
             
-            return [TextContent(type="text", text=content)]
+            return [TextContent(type="text", text=str(content) if content is not None else "")]
             
         except Exception as e:
             return [TextContent(type="text", text=f"Error extracting HTML: {str(e)}")]

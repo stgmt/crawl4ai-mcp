@@ -30,13 +30,13 @@ logger = logging.getLogger(__name__)
 app = Server("crawl4ai-mcp-proxy")
 
 @app.list_tools()
-async def list_tools() -> list[Tool]:
+async def list_tools() -> Any:
     """Список всех crawl4ai MCP tools"""
     logger.info("Listing available crawl4ai MCP tools")
     return ToolRegistry.get_all_tools()
 
 @app.call_tool()
-async def call_tool(name: str, arguments: Dict[str, Any]) -> Sequence[TextContent]:
+async def call_tool(name: str, arguments: Dict[str, Any]) -> Any:
     """Выполнение crawl4ai tool
     
     Args:
@@ -60,7 +60,7 @@ async def call_tool(name: str, arguments: Dict[str, Any]) -> Sequence[TextConten
         logger.error(f"Error executing tool {name}: {str(e)}")
         return [TextContent(type="text", text=f"Error executing tool {name}: {str(e)}")]
 
-async def run_stdio():
+async def run_stdio() -> None:
     """STDIO режим - для command-line MCP клиентов"""
     logger.info("Starting crawl4ai MCP server in STDIO mode")
     
@@ -77,13 +77,13 @@ async def run_stdio():
             logger.error(f"STDIO server error: {str(e)}")
             raise
 
-def run_sse():
+def run_sse() -> None:
     """SSE режим - для web-based MCP клиентов с real-time updates"""
     logger.info(f"Starting crawl4ai MCP server in SSE mode on port {settings.SSE_PORT}")
     
     sse = SseServerTransport("/messages/")
 
-    async def handle_sse(request):
+    async def handle_sse(request: Any) -> Any:
         """Обработка SSE соединений"""
         logger.info("New SSE connection established")
         async with sse.connect_sse(request.scope, request.receive, request._send) as streams:
@@ -101,7 +101,7 @@ def run_sse():
     )
     uvicorn.run(starlette_app, host="0.0.0.0", port=settings.SSE_PORT)
 
-def run_streamable_http(json_response: bool = False):
+def run_streamable_http(json_response: bool = False) -> None:
     """StreamableHTTP режим - для web integration"""
     logger.info(f"Starting crawl4ai MCP server in StreamableHTTP mode on port {settings.HTTP_PORT}")
     
@@ -126,7 +126,7 @@ def run_streamable_http(json_response: bool = False):
 
     from starlette.responses import JSONResponse
     
-    async def health_check(request):
+    async def health_check(request: Any) -> Any:
         """Health check endpoint"""
         return JSONResponse({
             "status": "healthy",

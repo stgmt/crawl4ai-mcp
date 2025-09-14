@@ -8,7 +8,7 @@ load_dotenv()
 class Settings:
     """Configuration settings loaded from environment variables"""
     
-    def __init__(self):
+    def __init__(self) -> None:
         # Crawl4ai Backend - REQUIRED
         self.CRAWL4AI_ENDPOINT: str = os.getenv("CRAWL4AI_ENDPOINT", "")
         
@@ -29,7 +29,7 @@ class Settings:
         # Validate settings after initialization
         self._validate_settings()
     
-    def _validate_settings(self):
+    def _validate_settings(self) -> None:
         """Validate required settings and log configuration"""
         logger = logging.getLogger(__name__)
         

@@ -16,7 +16,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Run security scan with Bandit
-      uses: securecodewarrior/github-action-bandit@v1
+      uses: PyCQA/bandit-action@v1
       with:
         path: python-mcp-server/src
 

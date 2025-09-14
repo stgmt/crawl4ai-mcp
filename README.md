@@ -2,6 +2,42 @@
 
 Model Context Protocol (MCP) server for Crawl4AI with HTTP transport, Bearer token authentication, and comprehensive testing framework.
 
+## 📦 Installation
+
+```bash
+# Clone repository
+git clone https://github.com/stgmt/crawl4ai-mcp.git
+cd crawl4ai-mcp
+
+# Python MCP Server
+cd python-mcp-server
+pip install -r requirements.txt
+
+# Node.js MCP Tester
+cd ../mcp-server-tester
+npm install
+```
+
+## ⚙️ Configuration
+
+Set environment variables:
+```bash
+export CRAWL4AI_ENDPOINT="https://your-crawl4ai-server.com"
+export BEARER_TOKEN="your_bearer_token_here"
+```
+
+## 📖 Usage
+
+### Python MCP Server
+```bash
+python -m src.server
+```
+
+### Node.js Testing
+```bash
+npm test
+```
+
 ## 🚀 Quick Start
 
 ### Using the MCP Server
