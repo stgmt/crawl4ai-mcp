@@ -158,6 +158,7 @@ class Crawl4AIMCPServer:
         logger.info(f"Starting Crawl4AI MCP server in StreamableHTTP mode on {host}:{port}")
 
         from crawl4ai_mcp.event_store import EventStore as CorrectEventStore
+
         event_store = CorrectEventStore()
         session_manager = StreamableHTTPSessionManager(
             app=self.server,
