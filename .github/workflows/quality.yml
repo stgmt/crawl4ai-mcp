@@ -18,7 +18,7 @@ jobs:
     - name: Run security scan with Bandit
       uses: PyCQA/bandit-action@v1
       with:
-        path: python-mcp-server/src
+        targets: python-mcp-server/src
 
     - name: Scan for secrets
       uses: trufflesecurity/trufflehog@main
