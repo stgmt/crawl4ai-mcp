@@ -38,6 +38,7 @@ Integrate powerful web scraping capabilities into Claude, ChatGPT, and any MCP-c
 - ✅ **All MCP transports** - STDIO, SSE, and HTTP support
 - ✅ **AI-optimized extraction** - Clean markdown, structured data
 - ✅ **One-line execution** - `crawl4ai-mcp --stdio`
+- ✅ **Python 3.10+ support** - Latest MCP compatibility
 - ✅ **Production ready** - Type hints, tests, Docker support
 
 ## ⚡ Quick Start
@@ -68,14 +69,17 @@ Add to your `claude_desktop_config.json`:
 ### With Any MCP Client
 
 ```bash
+# Default SSE mode (recommended)
+crawl4ai-mcp
+
 # STDIO mode (for CLI tools)
 crawl4ai-mcp --stdio
 
-# SSE mode (for web clients)  
-crawl4ai-mcp --sse
-
 # HTTP mode (for REST API)
 crawl4ai-mcp --http
+
+# With custom endpoint and token
+crawl4ai-mcp --endpoint https://my-crawl4ai.com --token dev-token
 ```
 
 ## 🚀 Features
@@ -128,17 +132,22 @@ docker run -p 3000:3000 stgmt/crawl4ai-mcp
 ### Basic Command Line
 
 ```bash
-# Default HTTP mode
+# Default SSE mode (recommended)
 crawl4ai-mcp
 
 # STDIO mode for CLI integration
 crawl4ai-mcp --stdio
 
-# SSE mode for real-time streaming
-crawl4ai-mcp --sse
-
-# HTTP mode explicitly
+# HTTP mode for REST API
 crawl4ai-mcp --http
+
+# With configuration options
+crawl4ai-mcp --endpoint https://api.crawl4ai.com --token your-token
+
+# Environment variable configuration
+export CRAWL4AI_ENDPOINT="https://api.crawl4ai.com"
+export BEARER_TOKEN="your-api-token"
+crawl4ai-mcp --sse
 ```
 
 ### Python Integration
@@ -322,19 +331,36 @@ crawl4ai-mcp --http
 ### Environment Variables
 
 ```bash
-# Crawl4AI endpoint (if using remote instance)
-CRAWL4AI_ENDPOINT=http://localhost:8000
+# Required: Crawl4AI endpoint
+CRAWL4AI_ENDPOINT=https://api.crawl4ai.com
+
+# Authentication token (optional)
+BEARER_TOKEN=your-api-token
 
 # Server ports
 HTTP_PORT=3000
-SSE_PORT=3001
+SSE_PORT=9001
 
 # Logging
 LOG_LEVEL=INFO
+DEBUG=false
 
 # Performance
-MAX_CONCURRENT_REQUESTS=10
 REQUEST_TIMEOUT=30
+```
+
+### Command Line Arguments
+
+```bash
+crawl4ai-mcp --help
+
+Options:
+  --stdio              Run in STDIO mode for MCP clients
+  --sse                Run in SSE mode for web interfaces (default)
+  --http               Run in HTTP mode
+  --endpoint ENDPOINT  Crawl4AI API endpoint URL (overrides CRAWL4AI_ENDPOINT)
+  --token TOKEN        Bearer authentication token (overrides BEARER_TOKEN)
+  --version, -v        Show program's version number and exit
 ```
 
 ### Configuration File
@@ -342,11 +368,31 @@ REQUEST_TIMEOUT=30
 Create `.env` file:
 
 ```env
-CRAWL4AI_ENDPOINT=http://your-crawl4ai-instance.com
+CRAWL4AI_ENDPOINT=https://api.crawl4ai.com
+BEARER_TOKEN=your-api-token
 HTTP_PORT=3000
-SSE_PORT=3001
-LOG_LEVEL=DEBUG
-DEBUG=true
+SSE_PORT=9001
+LOG_LEVEL=INFO
+DEBUG=false
+REQUEST_TIMEOUT=30
+```
+
+### Error Handling & Validation
+
+The server now includes automatic configuration validation:
+
+```bash
+# Without CRAWL4AI_ENDPOINT:
+❌ ERROR: CRAWL4AI_ENDPOINT is required!
+
+Set it via environment variable or command line:
+  export CRAWL4AI_ENDPOINT='https://your-crawl4ai-server.com'
+  OR
+  crawl4ai-mcp --endpoint https://your-crawl4ai-server.com
+
+Example endpoints:
+  - https://stigmat-rudnev.crawl4ai-dev.fvds.ru (default)
+  - http://localhost:8000 (local development)
 ```
 
 ### Advanced Settings
