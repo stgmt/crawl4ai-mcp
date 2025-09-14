@@ -244,7 +244,9 @@ Examples:
     )
 
     parser.add_argument(
-        "--bearer-token", type=str, help="Bearer authentication token (overrides CRAWL4AI_BEARER_TOKEN env var)"
+        "--bearer-token",
+        type=str,
+        help="Bearer authentication token (overrides CRAWL4AI_BEARER_TOKEN env var)",
     )
 
     parser.add_argument(
