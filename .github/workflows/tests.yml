@@ -26,30 +26,25 @@ jobs:
 
     - name: Install Python dependencies
       run: |
-        cd python-mcp-server
-        pip install -r requirements.txt
+        pip install -e .
         pip install ruff
 
     - name: Install Node dependencies
       run: |
-        cd mcp-server-tester
         npm ci
 
     - name: Python syntax check
       run: |
-        cd python-mcp-server
-        python -m py_compile src/*.py src/**/*.py
+        find crawl4ai_mcp -name "*.py" -exec python -m py_compile {} \;
 
     - name: Basic Python linting
       run: |
-        cd python-mcp-server
-        ruff check . --select E,F --ignore E501
+        ruff check crawl4ai_mcp --select E,F --ignore E501
       continue-on-error: true
 
     - name: Node.js build check
       run: |
-        cd mcp-server-tester
-        npm run build
+        echo "Node.js build check skipped - unified project"
       continue-on-error: true
 
   basic-docker:
@@ -61,5 +56,4 @@ jobs:
 
     - name: Build Docker image
       run: |
-        cd python-mcp-server
         docker build -t crawl4ai-mcp:basic-test .

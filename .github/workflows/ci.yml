@@ -16,7 +16,6 @@ jobs:
 
     - name: Build Python MCP Server
       run: |
-        cd python-mcp-server
         docker build -t crawl4ai-mcp:ci-test .
 
     - name: Quick container test
@@ -42,12 +41,10 @@ jobs:
 
     - name: Check Python files compile
       run: |
-        cd python-mcp-server
-        find src -name "*.py" -exec python -m py_compile {} \;
+        find crawl4ai_mcp -name "*.py" -exec python -m py_compile {} \;
 
     - name: Check Node.js package
       run: |
-        cd mcp-server-tester
         npm install --no-optional
         node -e "console.log('Node.js syntax OK')"
 
@@ -61,6 +58,5 @@ jobs:
 
     - name: Build and test container
       run: |
-        cd python-mcp-server
         docker build -t crawl4ai-mcp:health-test .
         echo "✅ Docker build successful"
