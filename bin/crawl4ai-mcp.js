@@ -1,142 +1,114 @@
 #!/usr/bin/env node
 
-const { spawn } = require('child_process');
-const path = require('path');
+const Crawl4AIMCPServer = require('../server.js');
 
-// Get command line arguments
+// Parse command line arguments
 const args = process.argv.slice(2);
+let mode = 'stdio';
+let port = null;
+let endpoint = null;
+let bearerToken = null;
 
-// Check if Python is installed and meets version requirements
-const checkPython = () => {
-  return new Promise((resolve) => {
-    // Try different Python commands in order of preference
-    const pythonCommands = [
-      'python3.13',
-      'python3.12', 
-      'python3.11',
-      'python3.10',
-      'python3',
-      'python'
-    ];
-    let index = 0;
-    
-    const tryNext = () => {
-      if (index >= pythonCommands.length) {
-        resolve(null);
-        return;
-      }
-      
-      const cmd = pythonCommands[index++];
-      const check = spawn(cmd, ['--version']);
-      let output = '';
-      
-      check.stdout.on('data', (data) => {
-        output += data.toString();
-      });
-      
-      check.on('error', tryNext);
-      check.on('exit', (code) => {
-        if (code === 0) {
-          // Parse version to check if >= 3.10
-          const match = output.match(/Python (\d+)\.(\d+)/);
-          if (match) {
-            const major = parseInt(match[1]);
-            const minor = parseInt(match[2]);
-            if (major === 3 && minor >= 10) {
-              console.log(`Using ${cmd} (${output.trim()})`);
-              resolve(cmd);
-              return;
-            }
-          }
-          tryNext();
-        } else {
-          tryNext();
-        }
-      });
-    };
-    
-    tryNext();
-  });
-};
+for (let i = 0; i < args.length; i++) {
+  switch (args[i]) {
+    case '--stdio':
+      mode = 'stdio';
+      break;
+    case '--sse':
+      mode = 'sse';
+      break;
+    case '--http':
+      mode = 'http';
+      break;
+    case '--port':
+      port = parseInt(args[i + 1]);
+      i++;
+      break;
+    case '--sse-port':
+      if (mode === 'sse') port = parseInt(args[i + 1]);
+      i++;
+      break;
+    case '--endpoint':
+      endpoint = args[i + 1];
+      i++;
+      break;
+    case '--bearer-token':
+      bearerToken = args[i + 1];
+      i++;
+      break;
+    case '--help':
+    case '-h':
+      console.log(`
+Usage: crawl4ai-mcp [options]
 
-// Main function
-const main = async () => {
-  const pythonCmd = await checkPython();
-  
-  if (!pythonCmd) {
-    console.error('Error: Python 3.10+ is not installed or not in PATH');
-    console.error('Please install Python 3.10 or later from https://www.python.org/');
-    console.error('Or use: brew install python@3.11');
-    process.exit(1);
+Options:
+  --stdio              Run in STDIO mode for MCP clients (default)
+  --sse                Run in SSE mode for web interfaces
+  --http               Run in HTTP mode
+  --endpoint ENDPOINT  Crawl4AI API endpoint URL (REQUIRED)
+  --bearer-token TOKEN Bearer authentication token (OPTIONAL)
+  --port PORT          HTTP server port (default: 3000)
+  --sse-port PORT      SSE server port (default: 3001)
+  --version, -v        Show version
+  --help, -h           Show this help
+
+Environment Variables:
+  CRAWL4AI_ENDPOINT    Crawl4AI API endpoint URL
+  CRAWL4AI_BEARER_TOKEN Bearer authentication token
+  HTTP_PORT            HTTP server port
+  SSE_PORT             SSE server port
+
+Examples:
+  crawl4ai-mcp --stdio --endpoint https://api.crawl4ai.com
+  crawl4ai-mcp --http --port 3000 --endpoint https://api.crawl4ai.com
+  crawl4ai-mcp --sse --sse-port 3001 --endpoint https://api.crawl4ai.com
+      `);
+      process.exit(0);
+    case '--version':
+    case '-v':
+      console.log('1.1.0');
+      process.exit(0);
   }
-  
-  // Check if the Python package is installed
-  const checkPackage = spawn(pythonCmd, ['-m', 'crawl4ai_mcp', '--help']);
-  
-  checkPackage.on('error', (error) => {
-    console.error('Error checking crawl4ai-mcp-sse-stdio installation:', error.message);
-    console.error('Please run: npm install -g crawl4ai-mcp-sse-stdio');
-    process.exit(1);
-  });
-  
-  checkPackage.on('exit', (code) => {
-    if (code !== 0) {
-      console.error('crawl4ai-mcp-sse-stdio Python package is not installed.');
-      console.error('Installing it now...');
-      
-      // Try to install the package with --user flag for modern Python
-      const install = spawn(pythonCmd, ['-m', 'pip', 'install', '--user', '--break-system-packages', 'crawl4ai-mcp-sse-stdio']);
-      
-      install.stdout.on('data', (data) => {
-        process.stdout.write(data);
-      });
-      
-      install.stderr.on('data', (data) => {
-        process.stderr.write(data);
-      });
-      
-      install.on('exit', (installCode) => {
-        if (installCode === 0) {
-          console.log('Successfully installed crawl4ai-mcp-sse-stdio');
-          runServer(pythonCmd, args);
-        } else {
-          console.error('Failed to install crawl4ai-mcp-sse-stdio');
-          process.exit(1);
-        }
-      });
-    } else {
-      runServer(pythonCmd, args);
-    }
-  });
-};
+}
 
-// Run the server
-const runServer = (pythonCmd, args) => {
-  const server = spawn(pythonCmd, ['-m', 'crawl4ai_mcp', ...args], {
-    stdio: 'inherit'
-  });
-  
-  server.on('error', (error) => {
+// Set environment variables
+if (endpoint) process.env.CRAWL4AI_ENDPOINT = endpoint;
+if (bearerToken) process.env.CRAWL4AI_BEARER_TOKEN = bearerToken;
+
+// Use environment variables if not provided via CLI
+if (!process.env.CRAWL4AI_ENDPOINT) {
+  console.error('Error: CRAWL4AI_ENDPOINT is required');
+  console.error('Use --endpoint or set CRAWL4AI_ENDPOINT environment variable');
+  process.exit(1);
+}
+
+// Set default ports from environment if available
+const httpPort = port || parseInt(process.env.HTTP_PORT) || 3000;
+const ssePort = port || parseInt(process.env.SSE_PORT) || 3001;
+
+// Create and run server
+const server = new Crawl4AIMCPServer();
+
+async function main() {
+  try {
+    switch (mode) {
+      case 'stdio':
+        await server.runStdio();
+        break;
+      case 'sse':
+        await server.runSSE(ssePort);
+        break;
+      case 'http':
+        await server.runHttp(httpPort);
+        break;
+      default:
+        console.error(`Unknown mode: ${mode}`);
+        process.exit(1);
+    }
+  } catch (error) {
     console.error('Error starting server:', error.message);
     process.exit(1);
-  });
-  
-  server.on('exit', (code) => {
-    process.exit(code || 0);
-  });
-  
-  // Handle signals
-  process.on('SIGINT', () => {
-    server.kill('SIGINT');
-  });
-  
-  process.on('SIGTERM', () => {
-    server.kill('SIGTERM');
-  });
-};
+  }
+}
 
-// Run main
-main().catch((error) => {
-  console.error('Unexpected error:', error);
-  process.exit(1);
-});
+main();
