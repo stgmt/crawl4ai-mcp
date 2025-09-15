@@ -4,6 +4,7 @@
 [![Python](https://img.shields.io/pypi/pyversions/crawl4ai-mcp.svg)](https://pypi.org/project/crawl4ai-mcp/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Downloads](https://pepy.tech/badge/crawl4ai-mcp)](https://pepy.tech/project/crawl4ai-mcp)
+[![Author](https://img.shields.io/badge/Author-🤖_AI_Помогатор-blue?style=flat&logo=telegram)](https://t.me/ii_pomogator)
 
 **MCP (Model Context Protocol) server for Crawl4AI** - Universal web crawling and data extraction for AI agents.
 
@@ -227,6 +228,9 @@ The crawl4ai-mcp server supports multiple transport modes and provides comprehen
 ### Basic Commands
 
 ```bash
+# Set required endpoint first
+export CRAWL4AI_ENDPOINT="https://your-crawl4ai-server.com"
+
 # HTTP mode (recommended for testing)
 crawl4ai-mcp --http --port 3000
 
