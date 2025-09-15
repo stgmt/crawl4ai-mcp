@@ -14,6 +14,7 @@ Integrate powerful web scraping capabilities into Claude, ChatGPT, and any MCP-c
 - [🐳 Quick Start with Docker (Recommended)](#-quick-start-with-docker-recommended)
 - [📦 Alternative Installation Methods](#-alternative-installation-methods)
 - [🛠️ Available Tools](#️-available-tools)
+- [🚀 Usage](#-usage)
 - [⚙️ Configuration](#️-configuration)
 - [🤝 Contributing](#-contributing)
 - [📄 License](#-license)
@@ -217,6 +218,34 @@ Execute JavaScript on webpages.
   }
 }
 ```
+
+## 🚀 Usage
+
+The crawl4ai-mcp server supports multiple transport modes and provides comprehensive web crawling capabilities through the Model Context Protocol.
+
+### Basic Commands
+
+```bash
+# HTTP mode (recommended for testing)
+crawl4ai-mcp --http --port 3000
+
+# SSE mode (Server-Sent Events)
+crawl4ai-mcp --sse --port 3001
+
+# STDIO mode (for MCP clients)
+crawl4ai-mcp --stdio
+```
+
+### With Custom Endpoint
+
+```bash
+# Using custom Crawl4AI endpoint with bearer token
+crawl4ai-mcp --http --port 3000 \
+  --crawl4ai-endpoint "https://your-server.com" \
+  --bearer-token "your-token"
+```
+
+See the [Python Integration](#python-integration-example) section for detailed code examples.
 
 ## ⚙️ Configuration
 
