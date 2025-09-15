@@ -251,17 +251,17 @@ The crawl4ai-mcp server supports multiple transport modes and provides comprehen
 ### Basic Commands
 
 ```bash
-# Set required endpoint first
-export CRAWL4AI_ENDPOINT="https://your-crawl4ai-server.com"
-
 # HTTP mode (recommended for testing)
-crawl4ai-mcp --http --port 3000
+crawl4ai-mcp --http --port 3000 --endpoint https://your-crawl4ai-server.com
 
 # SSE mode (Server-Sent Events)
-crawl4ai-mcp --sse --port 3001
+crawl4ai-mcp --sse --port 3001 --endpoint https://your-crawl4ai-server.com
 
 # STDIO mode (for MCP clients)
-crawl4ai-mcp --stdio
+crawl4ai-mcp --stdio --endpoint https://your-crawl4ai-server.com
+
+# With optional bearer token
+crawl4ai-mcp --http --port 3000 --endpoint https://your-crawl4ai-server.com --bearer-token your-token
 ```
 
 ### With Custom Endpoint
