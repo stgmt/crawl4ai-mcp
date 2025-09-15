@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const Crawl4AIMCPServer = require('../server.js');
+const { Crawl4AIMCPServer } = require('../server.js');
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -66,7 +66,7 @@ Examples:
       process.exit(0);
     case '--version':
     case '-v':
-      console.log('1.1.0');
+      console.log('1.2.0');
       process.exit(0);
   }
 }
@@ -99,7 +99,7 @@ async function main() {
         await server.runSSE(ssePort);
         break;
       case 'http':
-        await server.runHttp(httpPort);
+        await server.runHTTP(httpPort);
         break;
       default:
         console.error(`Unknown mode: ${mode}`);
