@@ -3,7 +3,7 @@
 FROM node:18-slim
 
 # Install Python 3.11 and build tools (required for pip packages)
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     python3.11 \
     python3-pip \
     python3.11-venv \
@@ -17,14 +17,14 @@ RUN ln -sf /usr/bin/python3.11 /usr/bin/python3 && \
     ln -sf /usr/bin/python3.11 /usr/bin/python
 
 # Install the NPM package globally
-RUN npm install -g crawl4ai-mcp-sse-stdio
+RUN npm install -g crawl4ai-mcp-sse-stdio@1.0.9
 
 # Copy the local Python package
 COPY . /app
 
 # 🔥 CRITICAL FIX: Install local Python package instead of PyPI version
 WORKDIR /app
-RUN pip install --break-system-packages .
+RUN pip install --no-cache-dir --break-system-packages .
 
 # Expose ports for HTTP and SSE
 EXPOSE 3000 3001
