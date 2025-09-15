@@ -15,7 +15,7 @@ class Crawl4AIMCPServer {
     this.server = new Server(
       {
         name: 'crawl4ai-mcp',
-        version: '1.1.0'
+        version: '1.2.0'
       },
       {
         capabilities: {
@@ -261,7 +261,7 @@ class Crawl4AIMCPServer {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
           name: 'crawl4ai-mcp',
-          version: '1.1.0',
+          version: '1.2.0',
           status: 'running',
           tools: this.tools.map(t => t.name)
         }));
