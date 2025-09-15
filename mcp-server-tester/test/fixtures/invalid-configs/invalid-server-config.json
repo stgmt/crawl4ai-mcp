@@ -1,7 +1,0 @@
-{
-  "mcpServers": {
-    "invalid-server": {
-      "args": ["test-server.js"]
-    }
-  }
-}
