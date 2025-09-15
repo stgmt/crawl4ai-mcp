@@ -103,9 +103,32 @@ npx crawl4ai-mcp --http --port 3000
 # Install from PyPI
 pip install crawl4ai-mcp
 
+<<<<<<< HEAD
 # Set required endpoint and run
 export CRAWL4AI_ENDPOINT="https://your-crawl4ai-server.com"
 crawl4ai-mcp --stdio
+=======
+# Run with command line arguments (recommended)
+crawl4ai-mcp --stdio --endpoint https://your-crawl4ai-server.com
+crawl4ai-mcp --http --port 3000 --endpoint https://your-crawl4ai-server.com
+crawl4ai-mcp --sse --port 3001 --endpoint https://your-crawl4ai-server.com
+
+# With optional bearer token
+crawl4ai-mcp --stdio --endpoint https://your-crawl4ai-server.com --bearer-token your-token
+```
+
+### From NPM (Alternative)
+
+```bash
+npm install -g crawl4ai-mcp-sse-stdio
+
+# Run with command line arguments (recommended)
+npx crawl4ai-mcp --stdio --endpoint https://your-crawl4ai-server.com
+npx crawl4ai-mcp --http --port 3000 --endpoint https://your-crawl4ai-server.com
+npx crawl4ai-mcp --sse --port 3001 --endpoint https://your-crawl4ai-server.com
+
+# With optional bearer token
+npx crawl4ai-mcp --stdio --endpoint https://your-crawl4ai-server.com --bearer-token your-token
 ```
 
 ### From Source
