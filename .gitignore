@@ -69,3 +69,11 @@ Thumbs.db
 # Test output
 test-results/
 test-report.xml
+coverage.xml
+
+# Package archives
+*.tgz
+*.tar.gz
+
+# Build artifacts
+dist/
