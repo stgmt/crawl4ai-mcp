@@ -220,15 +220,19 @@ Execute JavaScript on webpages.
 
 ## ⚙️ Configuration
 
-### Required Settings
+### Environment Variables
 
 ```bash
-# REQUIRED: Crawl4AI endpoint
+# REQUIRED: Crawl4AI endpoint URL
 export CRAWL4AI_ENDPOINT="https://your-crawl4ai-server.com"
 
-# OPTIONAL: Authentication token
+# OPTIONAL: Bearer authentication token
 export CRAWL4AI_BEARER_TOKEN="your-api-token"
 ```
+
+**Parameter Requirements:**
+- `CRAWL4AI_ENDPOINT` - **Required** - The URL of your Crawl4AI server instance
+- `CRAWL4AI_BEARER_TOKEN` - **Optional** - Bearer token for authenticated API access
 
 ### Command Line Options
 
@@ -239,9 +243,111 @@ Options:
   --stdio              Run in STDIO mode for MCP clients
   --sse                Run in SSE mode for web interfaces (default)
   --http               Run in HTTP mode
-  --endpoint ENDPOINT  Crawl4AI API endpoint URL
-  --bearer-token TOKEN Bearer authentication token
+  --endpoint ENDPOINT  Crawl4AI API endpoint URL (REQUIRED)
+  --bearer-token TOKEN Bearer authentication token (OPTIONAL)
   --version, -v        Show version
+```
+
+## 🐍 Python Integration Example
+
+Here's how to integrate the MCP server with your Python application using HTTP mode with bearer token authentication:
+
+```python
+import asyncio
+import aiohttp
+import json
+
+async def test_crawl4ai_mcp():
+    """
+    Example: Using Crawl4AI MCP server via HTTP with bearer token
+    """
+    # Server configuration
+    server_url = "http://localhost:3000"
+    bearer_token = "your-api-token"  # Optional
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    # Add bearer token if available
+    if bearer_token:
+        headers["Authorization"] = f"Bearer {bearer_token}"
+
+    async with aiohttp.ClientSession() as session:
+        # 1. List available tools
+        async with session.post(
+            f"{server_url}/tools/list",
+            headers=headers
+        ) as response:
+            tools = await response.json()
+            print("Available tools:", [tool['name'] for tool in tools['tools']])
+
+        # 2. Extract markdown from a webpage
+        tool_request = {
+            "name": "md",
+            "arguments": {
+                "url": "https://example.com",
+                "clean": True
+            }
+        }
+
+        async with session.post(
+            f"{server_url}/tools/call",
+            headers=headers,
+            json=tool_request
+        ) as response:
+            result = await response.json()
+            print("Markdown content:", result['content'][:200] + "...")
+
+        # 3. Take a screenshot
+        screenshot_request = {
+            "name": "screenshot",
+            "arguments": {
+                "url": "https://example.com",
+                "full_page": True
+            }
+        }
+
+        async with session.post(
+            f"{server_url}/tools/call",
+            headers=headers,
+            json=screenshot_request
+        ) as response:
+            result = await response.json()
+            print("Screenshot saved:", result.get('path', 'Screenshot data returned'))
+
+        # 4. Execute JavaScript on a page
+        js_request = {
+            "name": "execute_js",
+            "arguments": {
+                "url": "https://example.com",
+                "script": "document.title"
+            }
+        }
+
+        async with session.post(
+            f"{server_url}/tools/call",
+            headers=headers,
+            json=js_request
+        ) as response:
+            result = await response.json()
+            print("Page title:", result['content'])
+
+# Run the example
+if __name__ == "__main__":
+    # First, start the MCP server in HTTP mode:
+    # docker run -p 3000:3000 \
+    #   -e CRAWL4AI_ENDPOINT="https://your-crawl4ai-server.com" \
+    #   -e CRAWL4AI_BEARER_TOKEN="your-api-token" \
+    #   stgmt/crawl4ai-mcp:latest crawl4ai-mcp --http
+
+    asyncio.run(test_crawl4ai_mcp())
+```
+
+### Installation for Python integration
+
+```bash
+pip install aiohttp  # For HTTP client
 ```
 
 ## 🤝 Contributing
