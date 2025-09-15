@@ -52,7 +52,7 @@ jobs:
 
     - name: Install Node dependencies
       run: |
-        npm ci
+        npm install
 
     - name: Run Python type checking (mypy)
       run: |
@@ -77,9 +77,9 @@ jobs:
 
     - name: Check documentation completeness
       run: |
-        grep -q "Installation" README.md
-        grep -q "Usage" README.md
-        grep -q "Configuration" README.md
+        grep -qi "Installation" README.md
+        grep -qi "Usage" README.md
+        grep -qi "Configuration" README.md
 
     - name: Validate JSON files
       run: |

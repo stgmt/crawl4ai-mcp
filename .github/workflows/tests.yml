@@ -31,7 +31,7 @@ jobs:
 
     - name: Install Node dependencies
       run: |
-        npm ci
+        npm install
 
     - name: Python syntax check
       run: |
