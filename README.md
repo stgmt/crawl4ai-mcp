@@ -60,46 +60,14 @@ Add to your `claude_desktop_config.json`:
 
 ### Docker Hub
 
-While there's no official Docker image for this project yet, you can use the community-maintained image:
+Official Docker image available on Docker Hub:
 
-[![Docker Image](https://img.shields.io/badge/Docker-Available-blue?style=flat&logo=docker)](https://hub.docker.com/r/kasper011299/crawl4ai-mcp)
-
-```bash
-# Pull and run the community Docker image
-docker pull kasper011299/crawl4ai-mcp:latest
-docker run -p 3000:3000 kasper011299/crawl4ai-mcp:latest
-```
-
-### Build Your Own Docker Image
-
-Create a `Dockerfile` in your project:
-
-```dockerfile
-FROM node:18-alpine
-
-WORKDIR /app
-
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies
-RUN npm install -g crawl4ai-mcp-sse-stdio
-
-# Expose port
-EXPOSE 3000
-
-# Run the server
-CMD ["crawl4ai-mcp", "--http", "--port", "3000", "--endpoint", "https://your-crawl4ai-server.com"]
-```
-
-Build and run:
+[![Docker Image](https://img.shields.io/badge/Docker-Available-blue?style=flat&logo=docker)](https://hub.docker.com/r/stgmt/crawl4ai-mcp)
 
 ```bash
-# Build the image
-docker build -t crawl4ai-mcp .
-
-# Run the container
-docker run -p 3000:3000 -e CRAWL4AI_ENDPOINT="https://your-crawl4ai-server.com" crawl4ai-mcp
+# Pull and run the official Docker image
+docker pull stgmt/crawl4ai-mcp:latest
+docker run -p 3000:3000 stgmt/crawl4ai-mcp:latest
 ```
 
 ### Docker Compose
@@ -110,7 +78,7 @@ Create a `docker-compose.yml`:
 version: '3.8'
 services:
   crawl4ai-mcp:
-    image: kasper011299/crawl4ai-mcp:latest
+    image: stgmt/crawl4ai-mcp:latest
     ports:
       - "3000:3000"
     environment:
@@ -266,7 +234,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 - **NPM Package**: [https://www.npmjs.com/package/crawl4ai-mcp-sse-stdio](https://www.npmjs.com/package/crawl4ai-mcp-sse-stdio)
 - **GitHub Repository**: [https://github.com/stgmt/crawl4ai-mcp](https://github.com/stgmt/crawl4ai-mcp)
-- **Docker Hub**: [https://hub.docker.com/r/kasper011299/crawl4ai-mcp](https://hub.docker.com/r/kasper011299/crawl4ai-mcp) (Community maintained)
+- **Docker Hub**: [https://hub.docker.com/r/stgmt/crawl4ai-mcp](https://hub.docker.com/r/stgmt/crawl4ai-mcp)
 
 ---
 
