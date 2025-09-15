@@ -36,7 +36,7 @@ docker run --rm -p 3001:9001 \
 docker run --rm -p 3000:3000 \
   -e CRAWL4AI_ENDPOINT="https://your-crawl4ai-server.com" \
   -e CRAWL4AI_BEARER_TOKEN="your-optional-token" \
-  stgmt/crawl4ai-mcp:latest crawl4ai-mcp --http
+  stgmt/crawl4ai-mcp:latest crawl4ai-mcp --http --port 3000
 
 # STDIO mode (for Claude Desktop)
 docker run --rm -it \
@@ -92,7 +92,7 @@ npm install -g crawl4ai-mcp-sse-stdio
 # Run in different modes
 npx crawl4ai-mcp --stdio
 npx crawl4ai-mcp --sse
-npx crawl4ai-mcp --http
+npx crawl4ai-mcp --http --port 3000
 ```
 
 ### Python Package (PyPI)
@@ -368,7 +368,7 @@ if __name__ == "__main__":
     # docker run -p 3000:3000 \
     #   -e CRAWL4AI_ENDPOINT="https://your-crawl4ai-server.com" \
     #   -e CRAWL4AI_BEARER_TOKEN="your-api-token" \
-    #   stgmt/crawl4ai-mcp:latest crawl4ai-mcp --http
+    #   stgmt/crawl4ai-mcp:latest crawl4ai-mcp --http --port 3000
 
     asyncio.run(test_crawl4ai_mcp())
 ```
