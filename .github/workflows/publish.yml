@@ -140,7 +140,7 @@ jobs:
             
             ### Via PyPI:
             \`\`\`bash
-            pip install crawl4ai-mcp-sse-stdio==${version}
+            pip install crawl4ai-mcp==${version}
             crawl4ai-mcp --help
             \`\`\`
             
@@ -152,7 +152,7 @@ jobs:
             
             ## 🔗 Package Links
             - [NPM Package](https://www.npmjs.com/package/crawl4ai-mcp-sse-stdio/v/${version})
-            - [PyPI Package](https://pypi.org/project/crawl4ai-mcp-sse-stdio/${version}/)
+            - [PyPI Package](https://pypi.org/project/crawl4ai-mcp/${version}/)
             - [Docker Hub](https://hub.docker.com/r/stgmt/crawl4ai-mcp/tags)
             `;
             
