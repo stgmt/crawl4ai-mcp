@@ -89,9 +89,10 @@ Add to your `claude_desktop_config.json`:
 # Install globally
 npm install -g crawl4ai-mcp-sse-stdio
 
-# Run in different modes
+# Run in different modes (set CRAWL4AI_ENDPOINT first)
+export CRAWL4AI_ENDPOINT="https://your-crawl4ai-server.com"
 npx crawl4ai-mcp --stdio
-npx crawl4ai-mcp --sse
+npx crawl4ai-mcp --sse --port 3001
 npx crawl4ai-mcp --http --port 3000
 ```
 
@@ -123,7 +124,7 @@ Add to your `claude_desktop_config.json`:
   "mcpServers": {
     "crawl4ai": {
       "command": "crawl4ai-mcp",
-      "args": ["--stdio", "--endpoint", "https://your-crawl4ai-server.com"],
+      "args": ["--stdio"],
       "env": {
         "CRAWL4AI_ENDPOINT": "https://your-crawl4ai-server.com",
         "CRAWL4AI_BEARER_TOKEN": "your-optional-token"
